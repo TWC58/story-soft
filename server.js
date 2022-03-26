@@ -31,9 +31,4 @@ app.get('/', (req, res) => {
     res.json(data);
 });
 
-//If running on Heroku
-if(process.env.NODE_ENV === 'production') {
-    app.use(express.static('build'));
-}
-
 app.listen(PORT, console.log(`Server starting at port ${PORT}`));
