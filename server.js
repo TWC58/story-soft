@@ -12,15 +12,15 @@ const PORT = process.env.PORT || 8080;
 app.use(morgan('tiny'));
 
 //Connect to mongodb
-//mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/story-soft', {
-  //  useNewUrlParser: true,
-    //useUnifiedTopology:true
-//});
+mongoose.connect(process.env.MONGODB_URI || 'mongodb+srv://storysoftcse416:McK1lla_Gor1lla@cluster0.sebe4.mongodb.net/test', {
+    useNewUrlParser: true,
+    useUnifiedTopology:true
+});
 
 //Log connection
-//mongoose.connection.on('connected', () => {
-  //  console.log('Mongoose is connected...');
-//});
+mongoose.connection.on('connected', () => {
+    console.log('Mongoose is connected...');
+});
 
 //testing
 app.get('/', (req, res) => {
