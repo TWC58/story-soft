@@ -3,12 +3,17 @@ const Schema = mongoose.Schema
 const ObjectId = Schema.Types.ObjectId
 
 const UserSchema = new Schema(
-    {
+    {   
+        _id: { type: ObjectId, required: true },
         username: { type: String, required: true },
-        firstName: { type: String, required: true },
-        lastName: { type: String, required: true },
         email: { type: String, required: true },
-        passwordHash: { type: String, required: true }
+        hashedPassword: { type: String, required: true },
+        bio: { type: String, required: false },
+        likes: { type: [ObjectId], required: false },
+        dislikes: { type: [ObjectId], required: false },
+        followers: { type: [ObjectId], required: false },
+        following: { type: [ObjectId], required: false },
+        bookmarks: { type: Map, required: false }
     },
     { timestamps: true },
 )
