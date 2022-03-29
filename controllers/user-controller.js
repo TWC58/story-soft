@@ -5,16 +5,19 @@ const Like = require('../models/like-model')
 
 getLoggedIn = async (req, res) => {
     auth.verify(req, res, async function () {
-        const likes = await Like.find({ userId: req.userId });
         const loggedInUser = await User.findOne({ _id: req.userId });
         return res.status(200).json({
             loggedIn: true,
             user: {
+                _id: loggedInUser._id,
                 username: loggedInUser.username,
-                firstName: loggedInUser.firstName,
-                lastName: loggedInUser.lastName,
                 email: loggedInUser.email,
-                likes: likes
+                bio: loggedInUser.bio,
+                likes: loggedInUser.likes,
+                dislikes: loggedInUser.dislikes,
+                followers: loggedInUser.followers,
+                following: loggedInUser.following,
+                bookmarks: loggedInUser.bookmarks
             }
         });
     })
