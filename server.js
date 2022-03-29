@@ -23,7 +23,7 @@ app.use("/auth", auth_router);
 //Connect to mongodb
 mongoose.connect(process.env.MONGODB_URI || 'mongodb+srv://storysoftcse416:McK1lla_Gor1lla@cluster0.sebe4.mongodb.net/test', {
     useNewUrlParser: true,
-    useUnifiedTopology:true
+    useUnifiedTopology: true
 });
 
 //Log connection
@@ -32,12 +32,8 @@ mongoose.connection.on('connected', () => {
 });
 
 //testing
-app.get('/', (req, res) => {
-    const data = {
-        working: 'this worked',
-        number: 123
-    };
-    res.json(data);
+app.get('*', (req, res) => {
+    res.json("Page not found");
 });
 
 app.listen(PORT, console.log(`Server starting at port ${PORT}`));
