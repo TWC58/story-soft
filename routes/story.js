@@ -1,5 +1,7 @@
 const express = require("express");
 
+const StoryPostController = require('../controllers/story-post-controller')
+
 const router = express.Router();
 
 //Home Page
@@ -18,14 +20,10 @@ router.post("/followUser", (req, res) => {
 });
 
 //create post request
-router.post("/createPost", (req, res) => {
-    res.json("create post")
-});
+router.post("/createpost", StoryPostController.createPost);
 
 //update post request
-router.put("/updatePost", (req, res) => {
-    res.json("update post")
-});
+router.put("/updatePost", StoryPostController.updatePost);
 
 //delete post request
 router.delete("/deletePost", (req, res) => {
