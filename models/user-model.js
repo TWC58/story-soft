@@ -13,7 +13,7 @@ const UserSchema = new Schema(
         dislikes: { type: [ObjectId], required: false },
         followers: { type: [ObjectId], required: false },
         following: { type: [ObjectId], required: false },
-        bookmarks: { type: Map, required: false }
+        bookmarks: { type: Map, of: ObjectId, required: false }
     },
     { timestamps: true },
 )
