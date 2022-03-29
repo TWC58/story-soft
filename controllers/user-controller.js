@@ -25,8 +25,8 @@ getLoggedIn = async (req, res) => {
 
 registerUser = async (req, res) => {
     try {
-        const { username, firstName, lastName, email, password, passwordVerify } = req.body;
-        if (!username || !firstName || !lastName || !email || !password || !passwordVerify) {
+        const { username, email, password } = req.body;
+        if (!username || !email || !password) {
             return res
                 .status(400)
                 .json({ errorMessage: "Please enter all required fields." });
@@ -37,13 +37,6 @@ registerUser = async (req, res) => {
                 .json({
                     errorMessage: "Please enter a password of at least 8 characters."
                 });
-        }
-        if (password !== passwordVerify) {
-            return res
-                .status(400)
-                .json({
-                    errorMessage: "Please enter the same password twice."
-                })
         }
         const existingUserByEmail = await User.findOne({ email: email });
         const existingUserByUsername = await User.findOne({ username: new RegExp("^" + username + "$", "i") });
@@ -66,10 +59,10 @@ registerUser = async (req, res) => {
 
         const saltRounds = 10;
         const salt = await bcrypt.genSalt(saltRounds);
-        const passwordHash = await bcrypt.hash(password, salt);
+        const hashedPassword = await bcrypt.hash(password, salt);
 
         const newUser = new User({
-            username, firstName, lastName, email, passwordHash
+            username, email, hashedPassword
         });
         const savedUser = await newUser.save();
 
@@ -77,17 +70,20 @@ registerUser = async (req, res) => {
         const token = auth.signToken(savedUser);
 
         await res.cookie("token", token, {
-            httpOnly: true,
-            secure: true,
+            // httpOnly: true,
+            // secure: true,
             sameSite: "none"
         }).status(200).json({
             success: true,
             user: {
-                username: savedUser.username,
-                firstName: savedUser.firstName,
-                lastName: savedUser.lastName,
-                email: savedUser.email,
-                likes: []
+                username: loggedInUser.username,
+                email: loggedInUser.email,
+                bio: "",
+                likes: [],
+                dislikes: [],
+                followers: [],
+                following: [],
+                bookmarks: []
             }
         }).send();
     } catch (err) {
@@ -122,8 +118,6 @@ loginUser = async (req, res) => {
                     errorMessage: "The credentials entered do not match an existing account."
                 })
         }
-
-        const likes = await Like.find({ userId: existingUser._id });
 
         bcrypt.compare(password, existingUser.passwordHash, function(err, match) {
             if (err){
