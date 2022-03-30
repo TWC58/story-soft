@@ -1,4 +1,5 @@
-const auth = require('../auth');
+const passport = require('passport');
+require('../passport-setup');
 const Post = require('../models/post-model');
 const User = require('../models/user-model');
 const SectionController = require('../controllers/section-controller');

@@ -14,6 +14,7 @@ const SESSION_SECRET = process.env.SESSION_SECRET || 'secret';
 
 //sessions
 app.use(session({
+    name: "story-soft-cookie",
     resave: false,
     saveUninitialized: true,
     secret: SESSION_SECRET

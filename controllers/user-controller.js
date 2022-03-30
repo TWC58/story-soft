@@ -9,6 +9,18 @@ const isLoggedIn = (req, res, next) => {
     }
 }
 
+getUser = (req, res) => {
+    User.findOne({ _id: req.params.id}, function (err, user) {
+        if (err) {
+            return res.status(400).json("Improperly formatted request.");
+        }
+        else {
+            return res.status(200).json({ userInfo: user});
+        }
+    });
+}
+
 module.exports = {
-    isLoggedIn
+    isLoggedIn,
+    getUser
 }

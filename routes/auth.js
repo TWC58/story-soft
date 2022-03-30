@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const passport = require('passport');
-const cookieSession = require('cookie-session');
 require('../passport-setup');
 const User = require('../controllers/user-controller');
 
@@ -21,16 +20,19 @@ router.get('/google',
 
 //callback uri
 router.get('/google/callback', 
-  passport.authenticate('google', {
-      successRedirect: '/auth/good', 
-      failureRedirect: '/auth/failed', 
-    })
+  passport.authenticate('google')
 );
 
+//logout
 router.get('/logout', (req, res) => {
     req.logout();
     req.session.destroy();
     res.redirect('../');
+});
+
+//get user profile info
+router.get('/getUser/:id', (req, res) => {
+    getUser(req, res);
 });
 
 module.exports = router;
