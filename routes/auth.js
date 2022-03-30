@@ -20,7 +20,10 @@ router.get('/google',
 
 //callback uri
 router.get('/google/callback', 
-  passport.authenticate('google')
+  passport.authenticate('google', {
+    successRedirect: '/good',
+    failureRedirect: '/failed'
+  })
 );
 
 //logout
