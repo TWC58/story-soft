@@ -9,7 +9,7 @@ const isLoggedIn = (req, res, next) => {
     }
 }
 
-getUser = (req, res) => {
+getUser = async (req, res) => {
     User.findOne({ _id: req.params.id}, function (err, user) {
         if (err) {
             return res.status(400).json("Improperly formatted request.");
