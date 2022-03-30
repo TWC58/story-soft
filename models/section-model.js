@@ -6,7 +6,7 @@ const SectionSchema = new Schema(
     {   
         _id: { type: ObjectId, required: true },
         name: { type: String, required: true },
-        parent: { type: ObjectId, required: false },
+        parent: { type: ObjectId, required: true },
         children: { type: ObjectId, required: true },
         comments: { type: [ObjectId], required: true }
     },
