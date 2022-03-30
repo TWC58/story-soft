@@ -8,11 +8,20 @@ const UserSchema = new Schema(
         googleId: {type: String, required: true },
         username: { type: String, required: true },
         email: { type: String, required: true },
+<<<<<<< HEAD
         bio: { type: String, required: false },
         likes: { type: [ObjectId], required: true },
         dislikes: { type: [ObjectId], required: true },
         followers: { type: [ObjectId], required: true },
         following: { type: [ObjectId], required: true},
+=======
+        hashedPassword: { type: String, required: true },
+        bio: { type: String, required: true },
+        likes: { type: [ObjectId], required: true },
+        dislikes: { type: [ObjectId], required: true },
+        followers: { type: [ObjectId], required: true },
+        following: { type: [ObjectId], required: true },
+>>>>>>> 31c6619a01bfa93e632fea4276248604249f939e
         bookmarks: { type: Map, of: ObjectId, required: true }
     },
     { timestamps: true },

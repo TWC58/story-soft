@@ -10,7 +10,7 @@ const CommentSchema = new Schema(
         reply: {
             username: { type: String, required: true },
             message: { type: String, required: true }, 
-            required: false
+            required: true
         }
     },
     { timestamps: true },
