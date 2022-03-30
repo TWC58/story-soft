@@ -7,7 +7,7 @@ createSection = (name = "Untitled", parent = null, children = []) => {
         children: children,
         comments: []
     })
-    await section.save();
+    section.save();
     return section;//TODO is _id stored in here?
 }
 
