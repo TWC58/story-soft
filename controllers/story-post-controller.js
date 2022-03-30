@@ -156,27 +156,62 @@ getPosts = async (req, res) => {
 }
 
 deletePost = async (req, res) => {
-
+    auth.verify(req, res, async function () {
+        Post.findOne({ _id: req.params.id, userId: req.userId }, (err, post) => {
+            if (err) {
+                return res.status(404).json({
+                    err,
+                    message: 'Post not found!',
+                })
+            }
+            if (!post) {
+                return res.status(404).json({
+                    err,
+                    message: 'Post not found!',
+                })
+            }
+            if (post.published) {
+                //case where the tags need to be processed to remove the post
+                TagController.processTags(post, []);
+            }
+            Post.findOneAndDelete({ _id: req.params.id, userId: req.userId }, () => {
+                return res.status(200).json({ success: true, data: post })
+            }).catch(err => {
+                console.log(err)
+                return res.status(401).json({ success: false, errorMessage: "DENIED" })
+            })
+        })
+    });
 }
 
 //not exposed via router
 getPostsByAuthor = (search) => {
-    //TODO
+    const posts = await Post.find({'userData.username': { $regex: new RegExp("^" + search + "$", "i") }});
+    return posts;
 }
 
 //not exposed via router
 getPostsByTitle = (search) => {
-    //TODO
+    const posts = await Post.find({name: { $regex: new RegExp("^" + search + "$", "i") }});
+    return posts;
 }
 
 //not exposed via router
 getPostsByTag = (search) => {
-    //TODO
+    const postIds = TagController.getPostIdsByTag(search);
+    const posts = [];
+
+    postIds.array.forEach(id => {
+        const post = Post.findOne({_id: id});
+        posts.push(post);
+    });
+
+    return posts;
 }
 
 //not exposed via router
 getAllPosts = (search) => {
-    //TODO
+    return await Post.find({});
 }
 
 module.exports = {
