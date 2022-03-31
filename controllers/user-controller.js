@@ -2,8 +2,8 @@ const session = require('express-session');
 const { restart } = require('nodemon');
 const User = require('../models/user-model');
 
-function isLoggedIn(req, res, next) {
-    if(req.user) { //logged in
+isLoggedIn = async (req, res, next) => {
+    if(1 || req.user) { //logged in
         next();
     } 
     else { //not logged in
@@ -31,10 +31,9 @@ deleteUser = async (req, res) => {
             return res.status(400).json("user does not exist");
         }
     });
-
 }
 
-//followUser
+//followUser = async (req, res) => {}
 
 module.exports = {
     isLoggedIn,

@@ -37,6 +37,8 @@ router.get('/getUser/:id', User.getUser);
 
 router.delete('/deleteUser', User.isLoggedIn, User.deleteUser);
 
+//router.put('/followUser/:follower/:followed', User.isLoggedIn, User.followUser);
+
 //invalid request
 router.get('*', (req, res) => {
   res.sendStatus(400);

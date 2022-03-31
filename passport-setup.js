@@ -1,11 +1,11 @@
 const { ObjectID } = require('bson');
 const passport = require('passport');
-const GoogleStrategy = require('passport-google-oauth2').Strategy;
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const User = require('./models/user-model')
 
 const GOOGLE_CLIENT_ID = process.env.OAUTH_CLIENT_ID || "540240407763-v90k1276kl5v93s6hu5jfc8n42vk1c5b.apps.googleusercontent.com";
 const GOOGLE_CLIENT_SECRET = process.env.OAUTH_CLIENT_SECRET || "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";
-const GOOGLE_CALLBACK_URL = process.env.OAUTH_CALLBACK_URL || "http://localhost:5000/auth/google/callback";
+const GOOGLE_CALLBACK_URL = process.env.OAUTH_CALLBACK_URL || "http://localhost:5000/auth";
 
 passport.serializeUser((user, done) => {
   done(null, user.id);
@@ -33,7 +33,7 @@ passport.use(new GoogleStrategy({
 
       else if(currentUser) { //user already exists
         //console.log('Current User: ', currentUser);
-        done(null, currentUser.email);
+        done(null, currentUser);
       }
 
       else { //no user yet
