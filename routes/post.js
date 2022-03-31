@@ -1,29 +1,32 @@
 const express = require("express");
 
-const StoryPostController = require('../controllers/story-post-controller')
+const PostController = require('../controllers/post-controller')
 const CommentController = require('../controllers/comment-controller')
-const StoryTagController = require('../controllers/story-tag-controller')
+const TagController = require('../controllers/tag-controller')
 const SectionController = require('../controllers/section-controller')
 
 const router = express.Router();
 
 //create post request
-router.post("/createpost", StoryPostController.createPost);
+router.post("/:postType/createpost", PostController.createPost);
 
 //update post request
-router.put("/updatePost", StoryPostController.updatePost);
-
-//delete post request
-router.delete("/deletePost", StoryPostController.deletePost);
+router.put("/:postType/updatePost", PostController.updatePost);
 
 //get post request
-router.get("/getPost/:id", StoryPostController.getPost);
+router.get("/:postType/getPost/:id", PostController.getPost);
 
 //get posts request
-router.post("/getPosts", StoryPostController.getPosts);
+router.post("/:postType/getPosts", PostController.getPosts);
+
+//delete post request
+router.delete("/:postType/deletePost", PostController.deletePost);
 
 //like post request
-router.post("/likePost/:id", StoryPostController.likePost);
+router.post("/:postType/likePost/:id", PostController.likePost);
+
+//gets all tags for story site
+router.get("/:postType/getTags", TagController.getTags)
 
 //get section request
 router.get("/getSection/:id", SectionController.getSection);
@@ -34,8 +37,6 @@ router.post("/createComment", CommentController.createComment);
 //adds a comment reply
 router.post("/replyComment", CommentController.replyComment);
 
-//gets all tags for story site
-router.get("/getTags", StoryTagController.getTags)
 
 //report post request
 router.put("/reportPost", (req, res) => {

@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 const ObjectId = Schema.Types.ObjectId
 
-const StoryTagSchema = new Schema(
+const TagSchema = new Schema(
     {
         _id: { type: ObjectId, required: true },
         name: { type: String, required: true },
@@ -11,4 +11,5 @@ const StoryTagSchema = new Schema(
     { timestamps: true },
 )
 
-module.exports = mongoose.model('StoryTag', StoryTagSchema)
+module.exports = mongoose.model('StoryTag', TagSchema)
+module.exports = mongoose.model('ComicTag', TagSchema)
