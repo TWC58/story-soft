@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 const ObjectId = Schema.Types.ObjectId
 
-const PostSchema = new Schema(
+const StoryPostSchema = new Schema(
     {   
         _id: { type: ObjectId, required: true },
         published: { type: Date, required: true },
@@ -20,4 +20,4 @@ const PostSchema = new Schema(
     { timestamps: true },
 )
 
-module.exports = mongoose.model('Post', PostSchema)
+module.exports = mongoose.model('StoryPost', StoryPostSchema)

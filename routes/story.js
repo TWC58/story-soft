@@ -1,23 +1,11 @@
 const express = require("express");
 
 const StoryPostController = require('../controllers/story-post-controller')
+const CommentController = require('../controllers/comment-controller')
+const StoryTagController = require('../controllers/story-tag-controller')
+const SectionController = require('../controllers/section-controller')
 
 const router = express.Router();
-
-//Home Page
-router.get("/", (req, res) => {
-    res.json("STORY HOME PAGE")
-});
-
-//get profile request
-router.get("/getProfile", (req, res) => {
-    res.json("get profile")
-});
-
-//follow user request
-router.post("/followUser", (req, res) => {
-    res.json("follow user")
-});
 
 //create post request
 router.post("/createpost", StoryPostController.createPost);
@@ -26,48 +14,37 @@ router.post("/createpost", StoryPostController.createPost);
 router.put("/updatePost", StoryPostController.updatePost);
 
 //delete post request
-router.delete("/deletePost", (req, res) => {
-    res.json("delete post")
-});
+router.delete("/deletePost", StoryPostController.deletePost);
 
 //get post request
-router.get("/getPost", (req, res) => {
-    res.json("get post")
-});
+router.get("/getPost/:id", StoryPostController.getPost);
+
+//get posts request
+router.post("/getPosts", StoryPostController.getPosts);
 
 //like post request
-router.put("/likePost", (req, res) => {
-    res.json("like post")
-});
+router.post("/likePost/:id", StoryPostController.likePost);
+
+//get section request
+router.get("/getSection/:id", SectionController.getSection);
+
+//create comment request
+router.post("/createComment", CommentController.createComment);
+
+//adds a comment reply
+router.post("/replyComment", CommentController.replyComment);
+
+//gets all tags for story site
+router.get("/getTags", StoryTagController.getTags)
 
 //report post request
 router.put("/reportPost", (req, res) => {
     res.json("report post")
 });
 
-//get section request
-router.get("/getSection", (req, res) => {
-    res.json("get section")
-});
-
-//create comment request
-router.post("/createComment", (req, res) => {
-    res.json("create comment")
-});
-
-//get posts request
-router.get("/getPosts", (req, res) => {
-    res.json("get posts")
-});
-
 //send feedback request
 router.get("/sendFeedback", (req, res) => {
     res.json("send feedback")
-});
-
-//Page Not Found
-router.get("*", (req, res) => {
-    res.json("Page Not Found")
 });
 
 module.exports = router;
