@@ -7,47 +7,53 @@ const GOOGLE_CLIENT_ID = process.env.OAUTH_CLIENT_ID || "540240407763-v90k1276kl
 const GOOGLE_CLIENT_SECRET = process.env.OAUTH_CLIENT_SECRET || "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";
 const GOOGLE_CALLBACK_URL = process.env.OAUTH_CALLBACK_URL || "http://localhost:5000/auth/google/callback";
 
+passport.serializeUser((user, done) => {
+  done(null, user.id);
+});
+
+passport.deserializeUser((id, done) => {
+  User.findById(id).then((user) => {
+    done(null, user);
+  })
+});
+
 passport.use(new GoogleStrategy({
     clientID: GOOGLE_CLIENT_ID,
     clientSecret: GOOGLE_CLIENT_SECRET,
     callbackURL: GOOGLE_CALLBACK_URL,
     passReqToCallback: true
   },
-  function(request, accessToken, refreshToken, profile, done) {
+  (request, accessToken, refreshToken, profile, done) => {
     //use profile info to check if user is registered in DB (id/email)
-    User.findOne({ email: profile.email }, function (err, user) {
-      //console.log(user.email); //causes error on new user
-      if(err) { //if error
-          return done(err);
+    User.findOne({ googleId: profile.id }).then((err, currentUser) => {
+     
+      if(err) { //error occurred
+        done(err);
       }
-      if(!user) { //if no user yet
-          user = new User({
+
+      else if(currentUser) { //user already exists
+        //console.log('Current User: ', currentUser);
+        done(null, currentUser.email);
+      }
+
+      else { //no user yet
+          new User({
             _id: new ObjectID(),
+            googleId: profile.id,
             username: "User"+profile.id,
             email: profile.email,
+            profile_pic_url: "",
             bio: "",
             likes: [],
             dislikes: [],
             followers: [],
             following: [],
             bookmarks: []
-          })
-          user.save(function(err, results) {
-              if(err) { return done(err); }
-              else { return done(err, user); }
+          }).save().then((newUser) => {
+              //console.log('New User: ', newUser);
+              done(null, newUser);
           });
-      }
-      else { //success
-          return done(err, user);
       }
     });
   }
 ));
-
-passport.serializeUser(function(user, done) {
-  done(null, user);
-});
-
-passport.deserializeUser(function(user, done) {
-  done(null, user);
-});

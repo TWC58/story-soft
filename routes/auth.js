@@ -35,6 +35,8 @@ router.get('/logout', (req, res) => {
 //get user profile info
 router.get('/getUser/:id', User.getUser);
 
+router.delete('/deleteUser', User.isLoggedIn, User.deleteUser);
+
 //invalid request
 router.get('*', (req, res) => {
   res.sendStatus(400);
