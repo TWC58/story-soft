@@ -8,16 +8,16 @@ const SectionController = require('../controllers/section-controller')
 const router = express.Router();
 
 //create post request
-router.post("/:postType/createpost", PostController.createPost);
+router.post("/:postType/createpost/:userId", PostController.createPost);//TODO revert to auth
 
 //update post request
-router.put("/:postType/updatePost", PostController.updatePost);
+router.put("/:postType/updatePost/:id/:userId", PostController.updatePost);//TODO revert to auth
 
 //get post request
-router.get("/:postType/getPost/:id", PostController.getPost);
+router.get("/:postType/getPost/:id", PostController.getPost);//TODO revert to auth
 
 //get posts request
-router.post("/:postType/getPosts", PostController.getPosts);
+router.post("/:postType/getPosts", PostController.getPosts);//TODO revert to auth
 
 //delete post request
 router.delete("/:postType/deletePost", PostController.deletePost);

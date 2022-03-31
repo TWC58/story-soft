@@ -21,7 +21,7 @@ passport.use(new GoogleStrategy({
     clientID: GOOGLE_CLIENT_ID,
     clientSecret: GOOGLE_CLIENT_SECRET,
     callbackURL: GOOGLE_CALLBACK_URL,
-    passReqToCallback: true
+    state: true
   },
   (request, accessToken, refreshToken, profile, done) => {
     //use profile info to check if user is registered in DB (id/email)
