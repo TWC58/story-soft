@@ -1,6 +1,7 @@
 const Section = require('../models/section-model')
 
 createSection = async (name = "Untitled", parent = null, children = []) => {
+    console.log
     const section = new Section({
         name: name,
         parent: parent,
@@ -8,7 +9,7 @@ createSection = async (name = "Untitled", parent = null, children = []) => {
         comments: []
     })
     await section.save();
-    return section;//TODO is _id stored in here?
+    return section;
 }
 
 // Delete section after user confirms the "Delete Section" button

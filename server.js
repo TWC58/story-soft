@@ -23,6 +23,9 @@ app.use(expressSession({
 app.use(passport.initialize());
 app.use(passport.session());
 
+//JSON body parsing
+app.use(express.json());
+
 //Log HTTP Requests
 app.use(morgan('tiny'));
 
