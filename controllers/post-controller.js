@@ -1,11 +1,11 @@
 const passport = require('passport');
 require('../passport-setup');
 const auth = require('./user-controller')
-const StoryPost = require('../models/post-model');
-const ComicPost = require('../models/post-model');
+const StoryPost = require('../models/story-post-model');
+const ComicPost = require('../models/comic-post-model');
 const User = require('../models/user-model');
 const SectionController = require('./section-controller');
-const StoryTagController = require('./tag-controller');
+const TagController = require('./tag-controller');
 
 const SearchBy = {
     AUTHOR: "AUTHOR",
@@ -35,15 +35,17 @@ function processPostType(postType) {
 }
 
 createPost = async (req, res) => {
-    auth.isLoggedIn(req, res, async function () {
-        const user = await User.findOne({ _id: req.user.userId });
-        const rootSection = SectionController.createSection();
+    // auth.isLoggedIn(req, res, async function () {
 
+        const user = await User.findOne({ _id: req.params.userId });
+        // const user = await User.findOne({ _id: req.user.userId });
         let schemaType = processPostType(req.params.postType); 
 
         if (!schemaType) {
-            return res.status(404).json({ success: false, error: err })//case where we have an invalid post type url parameter
+            return res.status(404).json({ success: false, message: "Invalid post creation type in URL!" })//case where we have an invalid post type url parameter
         }
+
+        const rootSection = SectionController.createSection();
 
         const post = new schemaType({
             published: null,
@@ -51,13 +53,16 @@ createPost = async (req, res) => {
             rootSection: rootSection._id,
             summary: "",
             userData: { 
-                userId: req.user.userId,
+                // userId: req.user.userId,
+                userId: req.params.userId,
                 username: user.username
             },
             tags: [],
             likes: 0,
             dislikes: 0
         });
+
+        console.log("New post created: " + post);
 
         if (!post) {
             console.log("CREATION OF POST FAILED!")
@@ -80,16 +85,16 @@ createPost = async (req, res) => {
                     message: 'Post Not Created!'
                 })
             })
-    });
+    // });
 }
 
 updatePost = async (req, res) => {
-    auth.isLoggedIn(req, res, async function () {
+    // auth.isLoggedIn(req, res, async function () {
 
         let schemaType = processPostType(req.params.postType); 
 
         if (!schemaType) {
-            return res.status(404).json({ success: false, error: err })//case where we have an invalid post type url parameter
+            return res.status(404).json({ success: false, message: "Invalid post creation type in URL!" })//case where we have an invalid post type url parameter
         }
 
         const body = req.body;
@@ -101,9 +106,10 @@ updatePost = async (req, res) => {
             })
         }
 
-        schemaType.findOne({ _id: req.params.id, userId: req.user.userId }, (err, post) => {
+        // schemaType.findOne({ _id: req.params.id, userId: req.user.userId }, (err, post) => {
+        schemaType.findOne({ _id: req.params.id, userId: req.params.userId }, (err, post) => {
             console.log("ID " + req.params.id + " post found: " + JSON.stringify(post));
-            if (err) {
+            if (err || !post) {
                 return res.status(404).json({
                     err,
                     message: 'Post not found!',
@@ -114,19 +120,19 @@ updatePost = async (req, res) => {
             //but only if the story is already published, otherwise we don't care what tags it has
             if (post.published) {
                 //note, this may not actually be a feature implemented in the client side (may not be able to update tags on published post)
-                StoryTagController.processTags(post, body.tags, req.params.postType);
+                TagController.processTags(post, body.tags, req.params.postType);
             }
 
-            post.published = body.published;
-            post.name = body.name;
-            post.summary = body.summary;
-            post.tags = body.tags;
+            post.published = (body.published) ? body.published : null;
+            post.name = (body.name) ? body.name : "Untitled";
+            post.summary = (body.summary) ? body.summary : "";
+            post.tags = (body.tags) ? body.tags : [];
             //things not updatable from here: rootSection, userData, and likes and dislikes counts
 
             if (!post.published && body.published) {
                 //case where the user has just published the post
                 //handle any updating of tags or other publishing issues
-                StoryTagController.processTags(post, body.tags, req.params.postType);
+                TagController.processTags(post, body.tags, req.params.postType);
             }
 
             post
@@ -147,7 +153,7 @@ updatePost = async (req, res) => {
                     })
                 })
         })
-    });
+    // });
 }
 
 getPost = async (req, res) => {
@@ -254,7 +260,7 @@ deletePost = async (req, res) => {
             }
             if (post.published) {
                 //case where the tags need to be processed to remove the post
-                StoryTagController.processTags(post, [], req.params.postType);
+                TagController.processTags(post, [], req.params.postType);
             }
             schemaType.findOneAndDelete({ _id: req.params.id, userId: req.user.userId }, () => {
                 return res.status(200).json({ success: true, data: post })

@@ -1,5 +1,5 @@
-const StoryTag = require('../models/tag-model');
-const ComicTag = require('../models/tag-model');
+const StoryTag = require('../models/story-tag-model');
+const ComicTag = require('../models/comic-tag-model');
 
 const PostType = {
     STORY: "story",
@@ -25,8 +25,9 @@ processTags = (post, newTags, postType) => {
 
     //first figure out which tags are new and add this post to the tag
     let tagsDifference = newTags.filter(tag => !post.tags.includes(tag));//this holds all tags in newTags that were not already present in post.tags
+    console.log("TAGS DIFFERENCE: " + tagsDifference);
     //two cases: the tag already exists or does not exist
-    tagsDifference.array.forEach(tag => {//for each truly new tag
+    tagsDifference.forEach(tag => {//for each truly new tag
         schemaType.findOne({name: tag}, (err, tag) => {
             if (!tag) {
                 //case where the tag isn't already existing
@@ -43,9 +44,10 @@ processTags = (post, newTags, postType) => {
     });
 
     //next, figure out which tags have been removed and remove this post from that tag
-    let oldTags = post.tags.filer(tag => !newTags.includes(tag));
+    let oldTags = post.tags.filter(tag => !newTags.includes(tag));
+    console.log("OLD TAGS: " + oldTags);
 
-    oldTags.array.forEach(tag => {
+    oldTags.forEach(tag => {
         schemaType.findOne({name: tag}, (err, tag) => {
             //two cases, the post is the last one in the tag or there are more posts still present
             if (tag.posts.length === 1) {

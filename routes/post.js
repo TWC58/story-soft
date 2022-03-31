@@ -8,10 +8,10 @@ const SectionController = require('../controllers/section-controller')
 const router = express.Router();
 
 //create post request
-router.post("/:postType/createpost", PostController.createPost);
+router.post("/:postType/createpost/:userId", PostController.createPost);
 
 //update post request
-router.put("/:postType/updatePost", PostController.updatePost);
+router.put("/:postType/updatePost/:id/:userId", PostController.updatePost);
 
 //get post request
 router.get("/:postType/getPost/:id", PostController.getPost);
