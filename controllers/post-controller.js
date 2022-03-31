@@ -39,7 +39,7 @@ createPost = async (req, res) => {
         const user = await User.findOne({ _id: req.user.userId });
         const rootSection = SectionController.createSection();
 
-        let schemaType = processPostType(req.body.postType); 
+        let schemaType = processPostType(req.params.postType); 
 
         if (!schemaType) {
             return res.status(404).json({ success: false, error: err })//case where we have an invalid post type url parameter
@@ -56,7 +56,7 @@ createPost = async (req, res) => {
             },
             tags: [],
             likes: 0,
-            dislikes: 0,
+            dislikes: 0
         });
 
         if (!post) {
@@ -86,7 +86,7 @@ createPost = async (req, res) => {
 updatePost = async (req, res) => {
     auth.isLoggedIn(req, res, async function () {
 
-        let schemaType = processPostType(req.body.postType); 
+        let schemaType = processPostType(req.params.postType); 
 
         if (!schemaType) {
             return res.status(404).json({ success: false, error: err })//case where we have an invalid post type url parameter
@@ -114,7 +114,7 @@ updatePost = async (req, res) => {
             //but only if the story is already published, otherwise we don't care what tags it has
             if (post.published) {
                 //note, this may not actually be a feature implemented in the client side (may not be able to update tags on published post)
-                StoryTagController.processTags(post, body.tags, req.body.postType);
+                StoryTagController.processTags(post, body.tags, req.params.postType);
             }
 
             post.published = body.published;
@@ -126,7 +126,7 @@ updatePost = async (req, res) => {
             if (!post.published && body.published) {
                 //case where the user has just published the post
                 //handle any updating of tags or other publishing issues
-                StoryTagController.processTags(post, body.tags, req.body.postType);
+                StoryTagController.processTags(post, body.tags, req.params.postType);
             }
 
             post
@@ -153,7 +153,7 @@ updatePost = async (req, res) => {
 getPost = async (req, res) => {
     auth.isLoggedIn(req, res, async function () {
 
-        let schemaType = processPostType(req.body.postType); 
+        let schemaType = processPostType(req.params.postType); 
 
         if (!schemaType) {
             return res.status(404).json({ success: false, error: err })//case where we have an invalid post type url parameter
@@ -186,7 +186,7 @@ getPost = async (req, res) => {
 getPosts = async (req, res) => {
     auth.isLoggedIn(req, res, async function () {
 
-        let schemaType = processPostType(req.body.postType); 
+        let schemaType = processPostType(req.params.postType); 
 
         if (!schemaType) {
             return res.status(404).json({ success: false, error: err })//case where we have an invalid post type url parameter
@@ -214,7 +214,7 @@ getPosts = async (req, res) => {
                 posts = await this.getPostsByTitle(search, schemaType);
                 break;
             case (SearchBy.TAG):
-                posts = await this.getPostsByTag(search, schemaType, req.body.postType);
+                posts = await this.getPostsByTag(search, schemaType, req.params.postType);
                 break;
             case (SearchBy.NONE):
                 posts = await this.getAllPosts(schemaType);
@@ -233,7 +233,7 @@ getPosts = async (req, res) => {
 deletePost = async (req, res) => {
     auth.isLoggedIn(req, res, async function () {
 
-        let schemaType = processPostType(req.body.postType); 
+        let schemaType = processPostType(req.params.postType); 
 
         if (!schemaType) {
             return res.status(404).json({ success: false, error: err })//case where we have an invalid post type url parameter
@@ -254,7 +254,7 @@ deletePost = async (req, res) => {
             }
             if (post.published) {
                 //case where the tags need to be processed to remove the post
-                StoryTagController.processTags(post, [], req.body.postType);
+                StoryTagController.processTags(post, [], req.params.postType);
             }
             schemaType.findOneAndDelete({ _id: req.params.id, userId: req.user.userId }, () => {
                 return res.status(200).json({ success: true, data: post })
@@ -269,7 +269,7 @@ deletePost = async (req, res) => {
 likePost = async (req, res) => {
     auth.isLoggedIn(req, res, async function () {
 
-        let schemaType = processPostType(req.body.postType); 
+        let schemaType = processPostType(req.params.postType); 
 
         if (!schemaType) {
             return res.status(404).json({ success: false, error: err })//case where we have an invalid post type url parameter

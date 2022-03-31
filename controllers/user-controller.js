@@ -2,7 +2,19 @@ const session = require('express-session');
 const User = require('../models/user-model');
 
 function isLoggedIn(req, res, next) {
-    req.user ? next() : res.sendStatus(401); //unauthorized
+    if (req.user) {
+        User.find({email: req.user.email}, (err, user) => {
+            if (err) {
+                return res.sendStatus(401);
+            }
+
+            req.user.userId = user._id;
+            next();
+        });
+    } else {
+        console.log("isLoggedIn ERROR: No req.user");
+        return res.sendStatus(401);
+    }
 }
 
 getUser = async (req, res) => {
