@@ -9,7 +9,6 @@ createSection = async (name = "Untitled", parent = null, children = []) => {
         comments: []
     })
     await section.save();
-    console.log("NEW SECTION CREATION CALL RECEIVED. sectionID: " + section._id);
     return section;
 }
 

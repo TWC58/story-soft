@@ -28,18 +28,19 @@ processTags = (post, newTags, postType) => {
     console.log("TAGS DIFFERENCE: " + tagsDifference);
     //two cases: the tag already exists or does not exist
     tagsDifference.forEach(tag => {//for each truly new tag
-        schemaType.findOne({name: tag}, (err, tag) => {
-            if (!tag) {
+        schemaType.findOne({name: tag}, (err, searchedTag) => {
+            if (!searchedTag) {
                 //case where the tag isn't already existing
                 const newTag = new schemaType({
                     name: tag,
                     posts: [post._id]
                 });//create the new tag with the post ID stored as it's only current post
                 newTag.save();
+            } else {
+                //otherwise, the tag exists
+                searchedTag.posts.push(post._id);//add the post _id to the current list of ids in the tag
+                searchedTag.save();//save the updated tag
             }
-            //otherwise, the tag exists
-            tag.posts.push(post._id);//add the post _id to the current list of ids in the tag
-            tag.save();//save the updated tag
         })
     });
 
@@ -48,18 +49,19 @@ processTags = (post, newTags, postType) => {
     console.log("OLD TAGS: " + oldTags);
 
     oldTags.forEach(tag => {
-        schemaType.findOne({name: tag}, (err, tag) => {
+        schemaType.findOne({name: tag}, (err, searchedTag) => {
             //two cases, the post is the last one in the tag or there are more posts still present
-            if (tag.posts.length === 1) {
+            if (searchedTag && searchedTag.posts.length === 1) {//TODO currently doesn't delete the tag if last post is deleted
                 //case where the tag just needs to be deleted
-                schemaType.deleteOne({_id: tag._id});
+                schemaType.deleteOne({_id: searchedTag._id});
+            } else if (searchedTag) {
+                //otherwise we need to remove the post._id from the tag.posts array and then save the updated tag
+                const index = searchedTag.posts.indexOf(post._id);
+                if (index > -1) {
+                    searchedTag.posts.splice(index, 1);
+                }
+                searchedTag.save();
             }
-            //otherwise we need to remove the post._id from the tag.posts array and then save the updated tag
-            const index = tag.posts.indexOf(post._id);
-            if (index > -1) {
-                tag.posts.splice(index, 1);
-            }
-            tag.save();
         })
     });
 }
@@ -72,10 +74,10 @@ getPostIdsByTag = async (tag, postType) => {
 }
 
 getTags = async (req, res) => {
-    let schemaType = processPostType(req.body.postType); 
+    let schemaType = processTagType(req.params.postType); 
 
     if (!schemaType) {
-        return res.status(404).json({ success: false, error: err })//case where we have an invalid post type url parameter
+        return res.status(404).json({ success: false, message: "ERROR: Invalid post type in URL!" })//case where we have an invalid post type url parameter
     }
 
     const tags = await schemaType.find({});
