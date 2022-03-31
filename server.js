@@ -9,7 +9,7 @@ const session = require("express-session");
 require('./passport-setup');
 
 const app = express();
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 5000;
 const SESSION_SECRET = process.env.SESSION_SECRET || 'secret';
 
 //sessions

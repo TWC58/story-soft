@@ -34,8 +34,6 @@ router.get('/logout', (req, res) => {
 });
 
 //get user profile info
-router.get('/getUser/:id', (req, res) => {
-    getUser(req, res);
-});
+router.get('/getUser/:id', User.getUser);
 
 module.exports = router;
