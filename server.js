@@ -28,12 +28,12 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 //import routers
-const story_router = require('./routes/story');
+const post_router = require('./routes/post');
 const comic_router = require('./routes/comic');
 const auth_router = require('./routes/auth');
 
 //connect routers
-app.use("/story", story_router);
+app.use("/post", post_router);
 app.use("/comic", comic_router);
 app.use("/auth", auth_router);
 

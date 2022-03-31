@@ -1,10 +1,11 @@
 const passport = require('passport');
 require('../passport-setup');
 const auth = require('./user-controller')
-const StoryPost = require('../models/story-post-model');
+const StoryPost = require('../models/post-model');
+const ComicPost = require('../models/post-model');
 const User = require('../models/user-model');
-const SectionController = require('../controllers/section-controller');
-const StoryTagController = require('./story-tag-controller');
+const SectionController = require('./section-controller');
+const StoryTagController = require('./tag-controller');
 
 const SearchBy = {
     AUTHOR: "AUTHOR",
@@ -18,12 +19,33 @@ const LikeType = {
     DISLIKE: "DISLIKE"
 }
 
+const PostType = {
+    STORY: "story",
+    COMIC: "comic"
+}
+
+function processPostType(postType) {
+    if (postType === PostType.STORY) {
+        return StoryPost;
+    } else if (postType === PostType.COMIC) {
+        return ComicPost;
+    } 
+
+    return null;
+}
+
 createPost = async (req, res) => {
     auth.isLoggedIn(req, res, async function () {
         const user = await User.findOne({ _id: req.user.userId });
         const rootSection = SectionController.createSection();
 
-        const post = new StoryPost({
+        let schemaType = processPostType(req.body.postType); 
+
+        if (!schemaType) {
+            return res.status(404).json({ success: false, error: err })//case where we have an invalid post type url parameter
+        }
+
+        const post = new schemaType({
             published: null,
             name: "Untitled",
             rootSection: rootSection._id,
@@ -63,7 +85,14 @@ createPost = async (req, res) => {
 
 updatePost = async (req, res) => {
     auth.isLoggedIn(req, res, async function () {
-        const body = req.body
+
+        let schemaType = processPostType(req.body.postType); 
+
+        if (!schemaType) {
+            return res.status(404).json({ success: false, error: err })//case where we have an invalid post type url parameter
+        }
+
+        const body = req.body;
 
         if (!body) {
             return res.status(400).json({
@@ -72,7 +101,7 @@ updatePost = async (req, res) => {
             })
         }
 
-        StoryPost.findOne({ _id: req.params.id, userId: req.user.userId }, (err, post) => {
+        schemaType.findOne({ _id: req.params.id, userId: req.user.userId }, (err, post) => {
             console.log("ID " + req.params.id + " post found: " + JSON.stringify(post));
             if (err) {
                 return res.status(404).json({
@@ -85,7 +114,7 @@ updatePost = async (req, res) => {
             //but only if the story is already published, otherwise we don't care what tags it has
             if (post.published) {
                 //note, this may not actually be a feature implemented in the client side (may not be able to update tags on published post)
-                StoryTagController.processTags(post, body.tags);
+                StoryTagController.processTags(post, body.tags, req.body.postType);
             }
 
             post.published = body.published;
@@ -97,7 +126,7 @@ updatePost = async (req, res) => {
             if (!post.published && body.published) {
                 //case where the user has just published the post
                 //handle any updating of tags or other publishing issues
-                StoryTagController.processTags(post, body.tags);
+                StoryTagController.processTags(post, body.tags, req.body.postType);
             }
 
             post
@@ -124,6 +153,12 @@ updatePost = async (req, res) => {
 getPost = async (req, res) => {
     auth.isLoggedIn(req, res, async function () {
 
+        let schemaType = processPostType(req.body.postType); 
+
+        if (!schemaType) {
+            return res.status(404).json({ success: false, error: err })//case where we have an invalid post type url parameter
+        }
+
         const id = req.params.id;
 
         if (!id) {
@@ -133,7 +168,7 @@ getPost = async (req, res) => {
             })
         }
 
-        StoryPost.findOne({_id: id}, (err, post) => {
+        schemaType.findOne({_id: id}, (err, post) => {
             if (err) {
                 return res.status(400).json({ success: false, error: err });
             }
@@ -151,6 +186,12 @@ getPost = async (req, res) => {
 getPosts = async (req, res) => {
     auth.isLoggedIn(req, res, async function () {
 
+        let schemaType = processPostType(req.body.postType); 
+
+        if (!schemaType) {
+            return res.status(404).json({ success: false, error: err })//case where we have an invalid post type url parameter
+        }
+
         const body = req.body;
 
         if (!body) {
@@ -167,16 +208,16 @@ getPosts = async (req, res) => {
 
         switch (searchBy) {
             case (SearchBy.AUTHOR):
-                posts = await this.getPostsByAuthor(search);
+                posts = await this.getPostsByAuthor(search, schemaType);
                 break;
             case (SearchBy.TITLE):
-                posts = await this.getPostsByTitle(search);
+                posts = await this.getPostsByTitle(search, schemaType);
                 break;
             case (SearchBy.TAG):
-                posts = await this.getPostsByTag(search);
+                posts = await this.getPostsByTag(search, schemaType, req.body.postType);
                 break;
             case (SearchBy.NONE):
-                posts = await this.getAllPosts();
+                posts = await this.getAllPosts(schemaType);
                 break;
             default:
                 return res.status(400).json({
@@ -191,7 +232,14 @@ getPosts = async (req, res) => {
 
 deletePost = async (req, res) => {
     auth.isLoggedIn(req, res, async function () {
-        StoryPost.findOne({ _id: req.params.id, userId: req.user.userId }, (err, post) => {
+
+        let schemaType = processPostType(req.body.postType); 
+
+        if (!schemaType) {
+            return res.status(404).json({ success: false, error: err })//case where we have an invalid post type url parameter
+        }
+
+        schemaType.findOne({ _id: req.params.id, userId: req.user.userId }, (err, post) => {
             if (err) {
                 return res.status(404).json({
                     err,
@@ -206,9 +254,9 @@ deletePost = async (req, res) => {
             }
             if (post.published) {
                 //case where the tags need to be processed to remove the post
-                StoryTagController.processTags(post, []);
+                StoryTagController.processTags(post, [], req.body.postType);
             }
-            StoryPost.findOneAndDelete({ _id: req.params.id, userId: req.user.userId }, () => {
+            schemaType.findOneAndDelete({ _id: req.params.id, userId: req.user.userId }, () => {
                 return res.status(200).json({ success: true, data: post })
             }).catch(err => {
                 console.log(err)
@@ -220,7 +268,14 @@ deletePost = async (req, res) => {
 
 likePost = async (req, res) => {
     auth.isLoggedIn(req, res, async function () {
-        StoryPost.findOne({ _id: req.params.id }, (err, post) => {
+
+        let schemaType = processPostType(req.body.postType); 
+
+        if (!schemaType) {
+            return res.status(404).json({ success: false, error: err })//case where we have an invalid post type url parameter
+        }
+
+        schemaType.findOne({ _id: req.params.id }, (err, post) => {
             if (err) {
                 return res.status(404).json({
                     err,
@@ -308,24 +363,24 @@ likePost = async (req, res) => {
 }
 
 //not exposed via router
-getPostsByAuthor = async (search) => {
-    const posts = await StoryPost.find({'userData.username': { $regex: new RegExp("^" + search + "$", "i") }});
+getPostsByAuthor = async (search, schemaType) => {
+    const posts = await schemaType.find({'userData.username': { $regex: new RegExp("^" + search + "$", "i") }});
     return posts;
 }
 
 //not exposed via router
-getPostsByTitle = async (search) => {
-    const posts = await StoryPost.find({name: { $regex: new RegExp("^" + search + "$", "i") }});
+getPostsByTitle = async (search, schemaType) => {
+    const posts = await schemaType.find({name: { $regex: new RegExp("^" + search + "$", "i") }});
     return posts;
 }
 
 //not exposed via router
-getPostsByTag = async (search) => {
-    const postIds = await StoryTagController.getPostIdsByTag(search);
+getPostsByTag = async (search, schemaType, postType) => {
+    const postIds = await schemaType.getPostIdsByTag(search, postType);
     const posts = [];
 
     postIds.array.forEach(id => {
-        const post = StoryPost.findOne({_id: id});
+        const post = schemaType.findOne({_id: id});
         posts.push(post);
     });
 
@@ -333,8 +388,8 @@ getPostsByTag = async (search) => {
 }
 
 //not exposed via router
-getAllPosts = async (search) => {
-    return await StoryPost.find({published: { $ne: null }});//sends only posts whos published field is non-null
+getAllPosts = async (search, schemaType) => {
+    return await schemaType.find({published: { $ne: null }});//sends only posts whos published field is non-null
 }
 
 module.exports = {

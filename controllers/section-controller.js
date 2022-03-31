@@ -7,7 +7,7 @@ createSection = async (name = "Untitled", parent = null, children = []) => {
         children: children,
         comments: []
     })
-    section.save();
+    await section.save();
     return section;//TODO is _id stored in here?
 }
 
