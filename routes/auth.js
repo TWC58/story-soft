@@ -1,7 +1,6 @@
 const express = require("express");
-const router = express.Router();
 const passport = require('passport');
-require('../passport-setup');
+const router = express.Router();
 const User = require('../controllers/user-controller');
 
 //redirect uri after google failure (placeholder for now)
@@ -10,7 +9,7 @@ router.get("/failed", (req, res) => {
 });
 
 router.get("/good", User.isLoggedIn, (req, res) => {
-    res.send(`GMAIL: ${req.user.email}`)
+    res.send(`GMAIL: ${req.user.email}`);
 });
 
 //brings user to google sign in pa
@@ -21,8 +20,8 @@ router.get('/google',
 //callback uri
 router.get('/google/callback', 
   passport.authenticate('google', {
-    successRedirect: '/good',
-    failureRedirect: '/failed'
+    successRedirect: '/auth/good',
+    failureRedirect: '/auth/failed'
   })
 );
 
@@ -35,5 +34,10 @@ router.get('/logout', (req, res) => {
 
 //get user profile info
 router.get('/getUser/:id', User.getUser);
+
+//invalid request
+router.get('*', (req, res) => {
+  res.sendStatus(400);
+});
 
 module.exports = router;

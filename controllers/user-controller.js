@@ -1,16 +1,12 @@
+const session = require('express-session');
 const User = require('../models/user-model');
 
-const isLoggedIn = (req, res, next) => {
-    if(req.user) { //update to authenticate
-        next();
-    }
-    else {
-        res.sendStatus(401); //unauthorized
-    }
+function isLoggedIn(req, res, next) {
+    req.user ? next() : res.sendStatus(401); //unauthorized
 }
 
 getUser = async (req, res) => {
-    User.findOne({ _id: req.params.id}, function (err, user) {
+    User.findOne({ email: req.profile.email}, function (err, user) {
         if (err) {
             return res.status(400).json("Improperly formatted request.");
         }
