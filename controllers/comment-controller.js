@@ -1,4 +1,4 @@
-const auth = require('../auth')
+const auth = require('./user-controller')
 const Comment = require('../models/comment-model');
 
 createComment = async (req, res) => {

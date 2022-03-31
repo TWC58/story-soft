@@ -1,9 +1,10 @@
 const passport = require('passport');
 require('../passport-setup');
-const Post = require('../models/post-model');
+const auth = require('./user-controller')
+const StoryPost = require('../models/story-post-model');
 const User = require('../models/user-model');
 const SectionController = require('../controllers/section-controller');
-const TagController = require('../controllers/tag-controller');
+const StoryTagController = require('./story-tag-controller');
 
 const SearchBy = {
     AUTHOR: "AUTHOR",
@@ -18,17 +19,17 @@ const LikeType = {
 }
 
 createPost = async (req, res) => {
-    auth.verify(req, res, async function () {
-        const user = await User.findOne({ _id: req.userId });
+    auth.isLoggedIn(req, res, async function () {
+        const user = await User.findOne({ _id: req.user.userId });
         const rootSection = SectionController.createSection();
 
-        const post = new Post({
+        const post = new StoryPost({
             published: null,
             name: "Untitled",
             rootSection: rootSection._id,
             summary: "",
             userData: { 
-                userId: req.userId,
+                userId: req.user.userId,
                 username: user.username
             },
             tags: [],
@@ -61,7 +62,7 @@ createPost = async (req, res) => {
 }
 
 updatePost = async (req, res) => {
-    auth.verify(req, res, async function () {
+    auth.isLoggedIn(req, res, async function () {
         const body = req.body
 
         if (!body) {
@@ -71,7 +72,7 @@ updatePost = async (req, res) => {
             })
         }
 
-        Post.findOne({ _id: req.params.id, userId: req.userId }, (err, post) => {
+        StoryPost.findOne({ _id: req.params.id, userId: req.user.userId }, (err, post) => {
             console.log("ID " + req.params.id + " post found: " + JSON.stringify(post));
             if (err) {
                 return res.status(404).json({
@@ -84,7 +85,7 @@ updatePost = async (req, res) => {
             //but only if the story is already published, otherwise we don't care what tags it has
             if (post.published) {
                 //note, this may not actually be a feature implemented in the client side (may not be able to update tags on published post)
-                TagController.processTags(post, body.tags);
+                StoryTagController.processTags(post, body.tags);
             }
 
             post.published = body.published;
@@ -96,7 +97,7 @@ updatePost = async (req, res) => {
             if (!post.published && body.published) {
                 //case where the user has just published the post
                 //handle any updating of tags or other publishing issues
-                TagController.processTags(post, body.tags);
+                StoryTagController.processTags(post, body.tags);
             }
 
             post
@@ -121,7 +122,7 @@ updatePost = async (req, res) => {
 }
 
 getPost = async (req, res) => {
-    auth.verify(req, res, async function () {
+    auth.isLoggedIn(req, res, async function () {
 
         const id = req.params.id;
 
@@ -132,7 +133,7 @@ getPost = async (req, res) => {
             })
         }
 
-        Post.findOne({_id: id}, (err, post) => {
+        StoryPost.findOne({_id: id}, (err, post) => {
             if (err) {
                 return res.status(400).json({ success: false, error: err });
             }
@@ -148,7 +149,7 @@ getPost = async (req, res) => {
 }
 
 getPosts = async (req, res) => {
-    auth.verify(req, res, async function () {
+    auth.isLoggedIn(req, res, async function () {
 
         const body = req.body;
 
@@ -189,8 +190,8 @@ getPosts = async (req, res) => {
 }
 
 deletePost = async (req, res) => {
-    auth.verify(req, res, async function () {
-        Post.findOne({ _id: req.params.id, userId: req.userId }, (err, post) => {
+    auth.isLoggedIn(req, res, async function () {
+        StoryPost.findOne({ _id: req.params.id, userId: req.user.userId }, (err, post) => {
             if (err) {
                 return res.status(404).json({
                     err,
@@ -205,9 +206,9 @@ deletePost = async (req, res) => {
             }
             if (post.published) {
                 //case where the tags need to be processed to remove the post
-                TagController.processTags(post, []);
+                StoryTagController.processTags(post, []);
             }
-            Post.findOneAndDelete({ _id: req.params.id, userId: req.userId }, () => {
+            StoryPost.findOneAndDelete({ _id: req.params.id, userId: req.user.userId }, () => {
                 return res.status(200).json({ success: true, data: post })
             }).catch(err => {
                 console.log(err)
@@ -218,8 +219,8 @@ deletePost = async (req, res) => {
 }
 
 likePost = async (req, res) => {
-    auth.verify(req, res, async function () {
-        Post.findOne({ _id: req.params.id }, (err, post) => {
+    auth.isLoggedIn(req, res, async function () {
+        StoryPost.findOne({ _id: req.params.id }, (err, post) => {
             if (err) {
                 return res.status(404).json({
                     err,
@@ -241,7 +242,7 @@ likePost = async (req, res) => {
             }
             //otherwise we have a valid like situation
             //need to find the user liking
-            User.findOne({_id: req.userId}, (err, user) => {
+            User.findOne({_id: req.user.userId}, (err, user) => {
                 //FOUR CASES TO CONSIDER
 
                 //case the user has no like for this post and is liking
@@ -308,23 +309,23 @@ likePost = async (req, res) => {
 
 //not exposed via router
 getPostsByAuthor = async (search) => {
-    const posts = await Post.find({'userData.username': { $regex: new RegExp("^" + search + "$", "i") }});
+    const posts = await StoryPost.find({'userData.username': { $regex: new RegExp("^" + search + "$", "i") }});
     return posts;
 }
 
 //not exposed via router
 getPostsByTitle = async (search) => {
-    const posts = await Post.find({name: { $regex: new RegExp("^" + search + "$", "i") }});
+    const posts = await StoryPost.find({name: { $regex: new RegExp("^" + search + "$", "i") }});
     return posts;
 }
 
 //not exposed via router
 getPostsByTag = async (search) => {
-    const postIds = await TagController.getPostIdsByTag(search);
+    const postIds = await StoryTagController.getPostIdsByTag(search);
     const posts = [];
 
     postIds.array.forEach(id => {
-        const post = Post.findOne({_id: id});
+        const post = StoryPost.findOne({_id: id});
         posts.push(post);
     });
 
@@ -333,7 +334,7 @@ getPostsByTag = async (search) => {
 
 //not exposed via router
 getAllPosts = async (search) => {
-    return await Post.find({});
+    return await StoryPost.find({published: { $ne: null }});//sends only posts whos published field is non-null
 }
 
 module.exports = {
