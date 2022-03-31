@@ -43,9 +43,9 @@ processTags = (post, newTags) => {
     });
 }
 
-getPostIdsByTag = (tag) => {
-    const tag = await Tag.findOne({name: tag});
-    return (tag) ? tag.posts : [];
+getPostIdsByTag = async (tag) => {
+    const tagFound = await Tag.findOne({name: tag});
+    return (tagFound) ? tagFound.posts : [];
 }
 
 module.exports = {
