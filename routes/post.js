@@ -20,10 +20,10 @@ router.get("/:postType/getPost/:id", PostController.getPost);//TODO revert to au
 router.post("/:postType/getPosts", PostController.getPosts);//TODO revert to auth
 
 //delete post request
-router.delete("/:postType/deletePost", PostController.deletePost);
+router.delete("/:postType/deletePost/:id/:userId", PostController.deletePost);//TODO revert to auth
 
 //like post request
-router.post("/:postType/likePost/:id", PostController.likePost);
+router.post("/:postType/likePost/:id/:userId", PostController.likePost);//TODO revert to auth
 
 //gets all tags for story site
 router.get("/:postType/getTags", TagController.getTags)
