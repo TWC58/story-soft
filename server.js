@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const morgan = require('morgan');
 const path = require('path');
 const passport = require("passport");
-const expressSession = require("express-session");
+const cookieSession = require("cookie-session");
 require('./passport-setup');
 
 const app = express();
@@ -12,11 +12,9 @@ const PORT = process.env.PORT || 5000;
 const SESSION_SECRET = process.env.SESSION_SECRET || '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';
 
 //sessions
-app.use(expressSession({
-    name: "story-soft-session",
-    saveUninitialized: true,
-    resave: false,
-    secret: SESSION_SECRET
+app.use(cookieSession({
+    secret: SESSION_SECRET,
+    keys: ['oursuperspecialkey']
 })); 
 
 //authentication 

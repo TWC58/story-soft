@@ -1,6 +1,6 @@
 const express = require("express");
-const passport = require('passport');
 const router = express.Router();
+const passport = require('passport');
 const User = require('../controllers/user-controller');
 
 //redirect uri after google failure (placeholder for now)
@@ -9,7 +9,7 @@ router.get("/failed", (req, res) => {
 });
 
 router.get("/good", User.isLoggedIn, (req, res) => {
-    res.send(`GMAIL: ${req.user.email}`);
+    res.send(`GMAIL: ${req.user.email}\nID: ${req.user.id}`);
 });
 
 //brings user to google sign in pa
@@ -18,24 +18,21 @@ router.get('/google',
 );
 
 //callback uri
-router.get('/google/callback', 
-  passport.authenticate('google', {
-    successRedirect: '/auth/good',
-    failureRedirect: '/auth/failed'
-  })
-);
+router.get('/google/callback', passport.authenticate('google'), (req, res) => {
+  console.log("ENTERING CALLBACK", req.user);
+  res.redirect('/auth/good');
+});
 
 //logout
 router.get('/logout', (req, res) => {
     req.logout();
-    req.session.destroy();
     res.redirect('../');
 });
 
 //get user profile info
 router.get('/getUser/:id', User.getUser);
 
-router.delete('/deleteUser', User.isLoggedIn, User.deleteUser);
+router.delete('/deleteUser/:id', User.isLoggedIn, User.deleteUser);
 
 //router.put('/followUser/:follower/:followed', User.isLoggedIn, User.followUser);
 
