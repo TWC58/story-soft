@@ -9,7 +9,7 @@ router.get("/failed", (req, res) => {
 });
 
 router.get("/good", User.isLoggedIn, (req, res) => {
-    res.send(`GMAIL: ${req.user.email}\nID: ${req.user.id}`);
+    res.send("LOGGED IN");//(`GMAIL: ${req.user.email}\nID: ${req.user.id}`);
 });
 
 //brings user to google sign in pa
@@ -30,14 +30,21 @@ router.get('/logout', (req, res) => {
 });
 
 //get user profile info
-router.get('/getUser/:id', User.getUser);
+router.get('/getUser/:id', User.getUserInfo);
 
 router.delete('/deleteUser/:id', User.isLoggedIn, User.deleteUser);
 
-//router.put('/followUser/:follower/:followed', User.isLoggedIn, User.followUser);
+router.post('/followUser/:follower/:followed', User.isLoggedIn, User.followUser);
+
+router.post('/unfollowUser/:unfollower/:unfollowed', User.isLoggedIn, User.unfollowUser);
+
+router.post('/updateUser/:id', User.isLoggedIn, User.updateUser);
+
+router.post('/updateBookmarks/:id', User.isLoggedIn, User.updateBookmarks);
 
 //invalid request
 router.get('*', (req, res) => {
+  console.log("WILDCARD");
   res.sendStatus(400);
 });
 

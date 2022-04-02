@@ -26,18 +26,18 @@ passport.use(new GoogleStrategy({
     console.log("ENTERING AUTHENTICATE CALLBACK");
     //use profile info to check if user is registered in DB (id/email)
     User.findOne({ googleId: profile.id }).then((currentUser) => {
-     if
-     (currentUser) { //user already exists
+     if(currentUser) { //user already exists
         console.log('Current User: ', currentUser);
         done(null, currentUser);
       }
 
       else { //no user yet
+        console.log(profile);
           new User({
             _id: new ObjectID(),
             googleId: profile.id,
             username: "User"+profile.id,
-            email: profile.email,
+            email: profile.emails[0].value,
             profile_pic_url: "",
             bio: "",
             likes: [],
