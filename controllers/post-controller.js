@@ -35,10 +35,9 @@ function processPostType(postType) {
 }
 
 createPost = async (req, res) => {
-    // auth.isLoggedIn(req, res, async function () {
+    auth.isLoggedIn(req, res, async function () {
 
-        const user = await User.findOne({ _id: req.params.userId });
-        // const user = await User.findOne({ _id: req.user.userId });
+        const user = await User.findOne({ _id: req.user.userId });
         let schemaType = processPostType(req.params.postType); 
 
         if (!schemaType) {
@@ -55,8 +54,7 @@ createPost = async (req, res) => {
             rootSection: rootSection._id,
             summary: "",
             userData: { 
-                // userId: req.user.userId,
-                userId: req.params.userId,
+                userId: req.user.userId,
                 username: user.username
             },
             tags: [],
@@ -87,11 +85,11 @@ createPost = async (req, res) => {
                     message: 'Post Not Created!'
                 })
             })
-    // });
+    });
 }
 
 updatePost = async (req, res) => {
-    // auth.isLoggedIn(req, res, async function () {
+    auth.isLoggedIn(req, res, async function () {
 
         let schemaType = processPostType(req.params.postType); 
 
@@ -108,8 +106,7 @@ updatePost = async (req, res) => {
             })
         }
 
-        // schemaType.findOne({ _id: req.params.id, userId: req.user.userId }, (err, post) => {
-        schemaType.findOne({ _id: req.params.id, userId: req.params.userId }, (err, post) => {
+        schemaType.findOne({ _id: req.params.id, userId: req.user.userId }, (err, post) => {
             console.log("ID " + req.params.id + " post found: " + JSON.stringify(post));
             if (err || !post) {
                 return res.status(404).json({
@@ -155,7 +152,7 @@ updatePost = async (req, res) => {
                     })
                 })
         })
-    // });
+    });
 }
 
 getPost = async (req, res) => {
@@ -372,13 +369,13 @@ likePost = async (req, res) => {
 
 //not exposed via router
 this.getPostsByAuthor = async (search, schemaType) => {
-    const posts = await schemaType.find({'userData.username': { $regex: new RegExp("^" + search + "$", "i") }});
+    const posts = await schemaType.find({'userData.username': { $regex: new RegExp("^" + search + "$", "i") }, published: { $ne: null }});
     return posts;
 }
 
 //not exposed via router
 this.getPostsByTitle = async (search, schemaType) => {
-    const posts = await schemaType.find({name: { $regex: new RegExp("^" + search + "$", "i") }});
+    const posts = await schemaType.find({name: { $regex: new RegExp("^" + search + "$", "i") }, published: { $ne: null }});
     return posts;
 }
 
@@ -388,8 +385,9 @@ this.getPostsByTag = async (search, schemaType, postType) => {
     const posts = [];
 
     postIds.array.forEach(id => {
-        const post = schemaType.findOne({_id: id});
-        posts.push(post);
+        const post = await schemaType.findOne({_id: id, published: { $ne: null }});
+        if (post)
+            posts.push(post);
     });
 
     return posts;
