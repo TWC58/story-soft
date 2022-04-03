@@ -79,14 +79,12 @@ deleteUser = async (req, res) => {
         });
         return res.status(200).json("delete successful");
     })
-    .catch(error => {
-        if(error){
-        console.log("FAILURE: " + JSON.stringify(error));
+    .catch(err => {
+        console.log("FAILURE: " + err);
         return res.status(500).json({
-            error,
+            err,
             message: 'User database delete query failed.',
-        })
-    }
+        });
     });
     }
     else {
