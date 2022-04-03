@@ -24,7 +24,7 @@ getUserInfo = async (req, res) => {
     })
     .catch(error => {
         if(error){
-        console.log("FAILURE: " + JSON.stringify(error));
+        console.log("FAILURE: " + error);
         return res.status(500).json({
             error,
             message: 'User database query failed.',
@@ -85,7 +85,8 @@ deleteUser = async (req, res) => {
             err,
             message: 'User database delete query failed.',
         });
-    });
+    }
+);
     }
     else {
         return res.status(401).json({
