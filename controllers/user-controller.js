@@ -79,14 +79,12 @@ deleteUser = async (req, res) => {
         });
         return res.status(200).json("delete successful");
     })
-    .catch(error => {
-        if(error){
-        console.log("FAILURE: " + JSON.stringify(error));
+    .catch(err => {
+        console.log("FAILURE: " + err);
         return res.status(500).json({
-            error,
+            err,
             message: 'User database delete query failed.',
-        })
-    }
+        });
     });
     }
     else {
@@ -123,31 +121,61 @@ followUser = async (req, res) => {
 }
 
 unfollowUser = async (req, res) => {
-    unfollowerID = req.params.unfollower;
-    unfollowedID = req.params.unfollowed;
-    if(req.user.id == unfollowerID){
-    User.findByIdAndUpdate(unfollowerID, { $pull: {following: unfollowedID}});
-    User.findByIdAndUpdate(unfollowedID, { $pull: {followers: unfollowerID}});
+    unfollowerID = req.body.unfollower;
+    unfollowedID = req.body.unfollowed;
+    console.log("UNFOLLOWER:\t"+unfollowerID+"\nUNFOLLOWED:\t"+unfollowedID);
+    if(1){//req.user.id == unfollowerID){ //authorize
+        
+        //update unfollower's following list
+        User.findByIdAndUpdate(unfollowerID, { $pull: {following : unfollowedID }})
+        .catch(err => {
+            console.log(err);
+            return res.status(500);
+        });
+        
+        //update unfollowed's followers list
+        User.findByIdAndUpdate(unfollowedID, { $pull: {followers : unfollowerID }})
+        .catch(err => {
+            console.log(err);
+            return res.status(500);
+        });
+        return res.status(200).json("UNFOLLOW SUCCESSFUL");
     }
+    else { return res.status(401).json("UNAUTHORIZED UNFOLLOW REQUEST"); }
 }
 
 updateUser = async (req, res) => {
-    userID = req.params.id;
-    if(req.user.id == userID){
-    User.findByIdAndUpdate(userID, {
-        username: req.body.username,
-        profile_pic_url: req.body.profile_pic_url,
-        bio: req.body.bio
-    });}
+    userID = req.body.id;
+    if(1){//req.user.id == userID){ //ACTUAL
+        User.findByIdAndUpdate(userID, {
+            username: req.body.username,
+            profile_pic_url: req.body.profile_pic_url,
+            bio: req.body.bio
+        }).catch(err => {
+            console.log(err);
+            return res.status(500);
+        });
+        return res.status(200).json("UPDATE PROFILE SUCCESSFUL");
+    }
+    else { return res.status(401).json("UNAUTHORIZED UPDATEUSER REQUEST"); }
 }
 
 updateBookmarks = async (req, res) => {
-    userID = req.params.id;
-    if(req.user.id == userID){
-        User.findByIdAndUpdate(userID, {
-            $push: { bookmarks: req.body.bookmark }
+    userID = req.body.userID;
+    if(1){//req.user.id == userID){ //ACTUAL$push: { bookmarks: { postID: req.body.postID, sectionID: req.body.sectionID } }
+        User.findByIdAndUpdate(userID, { $pull: { bookmarks: { postID: req.body.postID } } } )
+        .catch(err => {
+            console.log(err);
+            return res.status(500);
         });
+        User.findByIdAndUpdate(userID, { $push: { bookmarks: { postID: req.body.postID, sectionID: req.body.sectionID } } } )
+        .catch(err => {
+            console.log(err);
+            return res.status(500);
+        });
+        return res.status(200).json("UPDATE BOOKMARKS SUCCESSFUL");
     }
+    else { return res.status(401).json("UNAUTHORIZED UPDATEBOOKMARKS REQUEST") };
 }
 
 module.exports = {
