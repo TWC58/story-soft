@@ -36,11 +36,11 @@ router.delete('/deleteUser/:id', User.isLoggedIn, User.deleteUser);
 
 router.post('/followUser', User.isLoggedIn, User.followUser);
 
-router.post('/unfollowUser/:unfollower/:unfollowed', User.isLoggedIn, User.unfollowUser);
+router.post('/unfollowUser', User.isLoggedIn, User.unfollowUser);
 
-router.post('/updateUser/:id', User.isLoggedIn, User.updateUser);
+router.post('/updateUser', User.isLoggedIn, User.updateUser);
 
-router.post('/updateBookmarks/:id', User.isLoggedIn, User.updateBookmarks);
+router.post('/updateBookmarks', User.isLoggedIn, User.updateBookmarks);
 
 //invalid request
 router.get('*', (req, res) => {

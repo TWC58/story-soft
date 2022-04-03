@@ -14,7 +14,7 @@ const UserSchema = new Schema(
         dislikes: { type: [ObjectId], required: true },
         followers: { type: [ObjectId], required: true },
         following: { type: [ObjectId], required: true},
-        bookmarks: { type: Map, of: ObjectId, required: true }
+        bookmarks: { type: [{ postID: ObjectId, sectionID: ObjectId}], required: true }
     },
     { timestamps: true },
 )
