@@ -109,7 +109,7 @@ updatePost = async (req, res) => {
         }
 
         // schemaType.findOne({ _id: req.params.id, userId: req.user.userId }, (err, post) => {
-        schemaType.findOne({ _id: req.params.id, userId: req.params.userId }, (err, post) => {
+        schemaType.findOne({ _id: req.params.id, 'userData.userId': req.params.userId }, (err, post) => {
             console.log("ID " + req.params.id + " post found: " + JSON.stringify(post));
             if (err || !post) {
                 return res.status(404).json({
@@ -266,7 +266,7 @@ deletePost = async (req, res) => {
                 TagController.processTags(post, [], req.params.postType);
             }
             // schemaType.findOneAndDelete({ _id: req.params.id, userId: req.user.userId }, () => {
-            schemaType.findOneAndDelete({ _id: req.params.id, userId: req.params.userId }, () => {
+            schemaType.findOneAndDelete({ _id: req.params.id, 'userData.userId': req.params.userId }, () => {
                 return res.status(200).json({ success: true, data: post })
             })
         })
