@@ -165,7 +165,7 @@ updateUser = async (req, res) => {
 updateBookmarks = async (req, res) => {
     userID = req.body.userID;
     if(1){//req.user.id == userID){ //ACTUAL$push: { bookmarks: { postID: req.body.postID, sectionID: req.body.sectionID } }
-        User.findByIdAndUpdate(userID, { $pull: { bookmarks: { postID: req.body.postI } } } )
+        User.findByIdAndUpdate(userID, { $pull: { bookmarks: { postID: req.body.postID } } } )
         .catch(err => {
             console.log(err);
             return res.status(500);
