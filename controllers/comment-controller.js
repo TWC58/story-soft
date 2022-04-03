@@ -2,7 +2,7 @@ const auth = require('./user-controller')
 const Comment = require('../models/comment-model');
 const Section = require('../models/section-model');
 
-createComment = async (req, res) => {
+createComment = (req, res) => {
     auth.isLoggedIn(req, res, async function () {
 
         const body = req.body;
@@ -16,9 +16,8 @@ createComment = async (req, res) => {
                 message: null
             }
         });
-
+        
         if (!comment) {
-            console.log("CREATION OF COMMENT FAILED!")
             return res.status(400).json({ success: false, error: err })
         }
 
@@ -28,24 +27,22 @@ createComment = async (req, res) => {
             .then(savedComment => {
                 // Find the section where the comment is and add it to the section's comment array
                 Section.findById({ _id: body.sectionId }, (err, section) => {
-                    section.comments.push(savedComment._id);
-                    section
-                        .save()
-                        .then(() => {
-                            console.log("SUCCESS!!!");
-                            return res.status(200).json({
-                                success: true,
-                                id: section._id,
-                                message: 'Section\'s comments updated!',
+                    if (err) {
+                        return res.status(400).json({ success: false, error: err })
+                    }
+                    else {
+                        section.comments.push(savedComment._id);
+                        section
+                            .save()
+                            .then(() => {
+                                console.log("SUCCESS!!!");
+                                return res.status(200).json({
+                                    success: true,
+                                    id: section._id,
+                                    message: 'Section\'s comments updated!',
+                                })
                             })
-                        })
-                        .catch(error => {
-                            console.log("FAILURE: " + JSON.stringify(error));
-                            return res.status(404).json({
-                                error,
-                                message: 'Section\'s comments not updated!',
-                            })
-                        })
+                    }
                 })
             })
             .then(() => {
@@ -55,17 +52,11 @@ createComment = async (req, res) => {
                     message: 'Comment Created!'
                 })
             })
-            .catch(error => {
-                console.log(error);
-                return res.status(400).json({
-                    error,
-                    message: 'Comment Not Created!'
-                })
-            })
-    });
+            .catch( console.log("ERROR: Comment Not Created!") )
+   });
 }
 
-replyComment = async (req, res) => {
+replyComment = (req, res) => {
     auth.isLoggedIn(req, res, async function () {
 
         const body = req.body;
@@ -78,7 +69,7 @@ replyComment = async (req, res) => {
         }
 
         // Find the comment by its id and update the reply
-        Comment.findById({ _id: req.params.id }, (err, comment) => {
+        Comment.findById({ _id: body._id }, (err, comment) => {
             comment.reply.username = body.username;
             comment.reply.message = body.message;
             comment.
@@ -87,17 +78,17 @@ replyComment = async (req, res) => {
                     console.log("SUCCESS!!!");
                     return res.status(200).json({
                         success: true,
-                        id: comment._id,
+                        id: body._id,
                         message: 'Reply updated!',
                     })
                 })
-                .catch(error => {
-                    console.log("FAILURE: " + JSON.stringify(error));
-                    return res.status(404).json({
-                        error,
-                        message: 'Reply not updated!',
-                    })
-                })
+                // .catch(error => {
+                //     console.log("FAILURE: " + JSON.stringify(error));
+                //     return res.status(404).json({
+                //         error,
+                //         message: 'Reply not updated!',
+                //     })
+                // })
         })
 
     });

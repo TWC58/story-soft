@@ -7,8 +7,8 @@ const CommentSchema = new Schema(
         username: { type: String, required: true },
         message: { type: String, required: true },
         reply: {
-            username: { type: String, required: true },
-            message: { type: String, required: true }
+            username: { type: String, required: false },
+            message: { type: String, required: false }
         }
     },
     { timestamps: true },
