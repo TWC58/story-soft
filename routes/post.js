@@ -28,6 +28,12 @@ router.post("/:postType/likePost/:id/:userId", PostController.likePost);//TODO r
 //gets all tags for story site
 router.get("/:postType/getTags", TagController.getTags)
 
+//add section request
+router.post("/addSection/:id", SectionController.addSection);
+
+//delete section request
+router.delete("/deleteSection/:id", SectionController.deleteSection);
+
 //get section request
 router.get("/getSection/:id", SectionController.getSection);
 
