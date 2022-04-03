@@ -34,7 +34,7 @@ router.get('/getUser/:id', User.getUserInfo);
 
 router.delete('/deleteUser/:id', User.isLoggedIn, User.deleteUser);
 
-router.post('/followUser/:follower/:followed', User.isLoggedIn, User.followUser);
+router.post('/followUser', User.isLoggedIn, User.followUser);
 
 router.post('/unfollowUser/:unfollower/:unfollowed', User.isLoggedIn, User.unfollowUser);
 

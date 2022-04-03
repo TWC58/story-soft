@@ -37,11 +37,16 @@ deleteUser = async (req, res) => {
     //delete likes, posts, following
     console.log("DELETE USER ENTERED");
     if(1){//(req.user.id == req.params.id) {
-    //find user
-    User.findById(req.params.id).then((user) => {
-        if(!user){ return res.status(400).json("USER DOES NOT EXIST");}
-        //decrement likes for both comic and story
-        if(user.likes){
+        
+        //find user
+        User.findById(req.params.id).then((user) => {
+            
+            //user not found
+            if(!user){ 
+                return res.status(400).json("USER DOES NOT EXIST");
+            }
+            //decrement likes for both comic and story
+            if(user.likes){
         user.likes.forEach(postID => {
             console.log("DECREMENTING LIKES");
             ComicPost.findByIdAndUpdate(postID, { $inc: {likes: -1} });
@@ -63,35 +68,26 @@ deleteUser = async (req, res) => {
             console.log("REMOVING FOLLOWER");
             User.updateOne({_id : followingID}, {$pull: {followers: {_id: user._id}}});
         });}
+        console.log("NOW DELETING USER : "+req.params.id);
+        User.findByIdAndDelete((req.params.id), (err, docs) => {
+            if(err){
+                console.log(err);
+            }
+            else{
+                console.log("USER DELETED");
+            }
+        });
+        return res.status(200).json("delete successful");
+    })
+    .catch(error => {
+        if(error){
+        console.log("FAILURE: " + JSON.stringify(error));
+        return res.status(500).json({
+            error,
+            message: 'User database delete query failed.',
+        })
+    }
     });
-    //.catch(error => {
-      //  if(error){
-        //console.log("FAILURE: " + JSON.stringify(error));
-        //return res.status(500).json({
-          //  error,
-            //message: 'User database delete query failed.',
-        //})
-    //}
-    //})
-    
-        User.deleteOne({ _id: req.params.id });//.then((writeConcernDoc, deletedCount) => {
-            //console.log(deletedCount);
-            //if(deletedCount) { //successfully deleted
-            //    return res.status(200).json("successfully deleted");
-            //}
-            //else { //user didn't exist
-              //  return res.status(400).json("user does not exist");
-            //}
-        //});
-        //.catch(error => {
-          //  if(error){
-            //console.log("FAILURE: " + JSON.stringify(error));
-            //return res.status(500).json({
-              //  error,
-                //message: 'User database delete failed.',
-            //})
-        //}
-        //});
     }
     else {
         return res.status(401).json({
@@ -101,13 +97,28 @@ deleteUser = async (req, res) => {
 }
 
 followUser = async (req, res) => {
-    followerID = req.params.follower;
-    followedID = req.params.followed;
-    if(req.user.id == followerID){
-    //update follower's following list
-    User.findByIdAndUpdate(followerID, { $push: {following: followedID}});
-    //update followed's followers list
-    User.findByIdAndUpdate(followedID, { $push: {followers: followerID}});
+    followerID = req.body.follower;
+    followedID = req.body.followed;
+    console.log("FOLLOWER:\t"+followerID+"\nFOLLOWED:\t"+followedID);
+    if(1){//req.user.id == followerID){ //authorize
+        
+        //update follower's following list
+        User.findByIdAndUpdate(followerID, { $push: {following : followedID }})
+        .catch(err => {
+            console.log(err);
+            return res.status(500);
+        });
+        
+        //update followed's followers list
+        User.findByIdAndUpdate(followedID, { $push: {followers : followerID }})
+        .catch(err => {
+            console.log(err);
+            return res.status(500);
+        });
+        return res.status(200).json("FOLLOW SUCCESSFUL");
+    }
+    else {
+        return res.status(401).json("UNAUTHORIZED FOLLOW REQUEST");
     }
 }
 
