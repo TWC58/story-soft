@@ -109,7 +109,7 @@ updatePost = async (req, res) => {
         }
 
         // schemaType.findOne({ _id: req.params.id, userId: req.user.userId }, (err, post) => {
-        schemaType.findOne({ _id: req.params.id, userId: req.params.userId }, (err, post) => {
+        schemaType.findOne({ _id: req.params.id, 'userData.userId': req.params.userId }, (err, post) => {
             console.log("ID " + req.params.id + " post found: " + JSON.stringify(post));
             if (err || !post) {
                 return res.status(404).json({
@@ -239,7 +239,7 @@ getPosts = async (req, res) => {
 }
 
 deletePost = async (req, res) => {
-    auth.isLoggedIn(req, res, async function () {
+    // auth.isLoggedIn(req, res, async function () {
 
         let schemaType = processPostType(req.params.postType); 
 
@@ -247,7 +247,8 @@ deletePost = async (req, res) => {
             return res.status(404).json({ success: false, message: "ERROR: invalid post type in URL!" })//case where we have an invalid post type url parameter
         }
 
-        schemaType.findOne({ _id: req.params.id, userId: req.user.userId }, (err, post) => {
+        // schemaType.findOne({ _id: req.params.id, userId: req.user.userId }, (err, post) => {
+        schemaType.findOne({ _id: req.params.id, 'userData.userId': req.params.userId }, (err, post) => {
             if (err) {
                 return res.status(404).json({
                     err,
@@ -264,18 +265,16 @@ deletePost = async (req, res) => {
                 //case where the tags need to be processed to remove the post
                 TagController.processTags(post, [], req.params.postType);
             }
-            schemaType.findOneAndDelete({ _id: req.params.id, userId: req.user.userId }, () => {
+            // schemaType.findOneAndDelete({ _id: req.params.id, userId: req.user.userId }, () => {
+            schemaType.findOneAndDelete({ _id: req.params.id, 'userData.userId': req.params.userId }, () => {
                 return res.status(200).json({ success: true, data: post })
-            }).catch(err => {
-                console.log(err)
-                return res.status(401).json({ success: false, errorMessage: "DENIED" })
             })
         })
-    });
+    // });
 }
 
 likePost = async (req, res) => {
-    auth.isLoggedIn(req, res, async function () {
+    // auth.isLoggedIn(req, res, async function () {
 
         let schemaType = processPostType(req.params.postType); 
 
@@ -305,7 +304,14 @@ likePost = async (req, res) => {
             }
             //otherwise we have a valid like situation
             //need to find the user liking
-            User.findOne({_id: req.user.userId}, (err, user) => {
+            // User.findOne({_id: req.user.userId}, (err, user) => {
+            User.findOne({_id: req.params.userId}, (err, user) => {
+                if (err || !user) {
+                    return res.status(404).json({
+                        err,
+                        message: 'Unauthorized user!',
+                    })
+                }
                 //FOUR CASES TO CONSIDER
 
                 //case the user has no like for this post and is liking
@@ -367,7 +373,7 @@ likePost = async (req, res) => {
                 }
             });
         })
-    });
+    // });
 }
 
 //not exposed via router
