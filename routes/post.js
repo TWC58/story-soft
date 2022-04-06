@@ -38,10 +38,10 @@ router.delete("/deleteSection/:id", SectionController.deleteSection);
 router.get("/getSection/:id", SectionController.getSection);
 
 //create comment request
-router.post("/createComment", CommentController.createComment);
+router.post("/createComment/:id", CommentController.createComment);
 
 //adds a comment reply
-router.post("/replyComment", CommentController.replyComment);
+router.post("/replyComment/:id", CommentController.replyComment);
 
 
 //report post request
