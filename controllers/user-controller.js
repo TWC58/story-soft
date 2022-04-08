@@ -5,8 +5,8 @@ const ComicPost = require('../models/comic-post-model');
 const StoryPost = require('../models/story-post-model');
 
 const isLoggedIn = (req, res, next) => {
-    //req.user ? next() : res.redirect('/auth/google'); //ACTUAL
-    next(); //TESTING
+    req.user ? next() : res.redirect('/auth/google'); //ACTUAL
+    //next(); //TESTING
 }
 
 getUserInfo = async (req, res) => {
