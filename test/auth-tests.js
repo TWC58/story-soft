@@ -89,26 +89,38 @@ describe('User Tests', function() {
             });
         });
 
-        describe('followUser() invalid follower id', function () {
+        describe('unfollowUser() invalid follower id', function () {
             it('Should return 400 error', function () {
                 assert.equal([1, 2, 3].indexOf(4), -1);
             });
         });
 
-        describe('followUser() invalid follower and following ids', function () {
+        describe('unfollowUser() invalid followed id', function () {
             it('Should return 400 error', function () {
                 assert.equal([1, 2, 3].indexOf(4), -1);
             });
         });
 
-        describe('followUser() unauthorized', function () {
-            it('Should return 401 error', function () {
+        describe('followUser() invalid follower and followed ids', function () {
+            it('Should return 400 error', function () {
                 assert.equal([1, 2, 3].indexOf(4), -1);
             });
         });
 
-        describe('followUser() unauthorized', function () {
-            it('Should return 401 error', function () {
+        describe('unfollowUser() invalid unfollower and unfollower ids', function () {
+            it('Should return 400 error', function () {
+                assert.equal([1, 2, 3].indexOf(4), -1);
+            });
+        });
+
+        describe('unfollowUser() already not following', function () {
+            it('Should return 400 error', function () {
+                assert.equal([1, 2, 3].indexOf(4), -1);
+            });
+        });
+
+        describe('followUser() already following', function () {
+            it('Should return 400 error', function () {
                 assert.equal([1, 2, 3].indexOf(4), -1);
             });
         });
