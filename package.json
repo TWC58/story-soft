@@ -32,7 +32,7 @@
     "start": "node server.js",
     "build": "react-scripts build",
     "test": "mocha",
-    "eject": "react-scripts eject"
+    "dev": "nodemon server.js"
   },
   "eslintConfig": {
     "extends": [
