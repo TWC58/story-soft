@@ -16,7 +16,7 @@ createComment = (req, res) => {
                 message: null
             }
         });
-        
+
         if (!comment) {
             return res.status(400).json({ success: false, error: err })
         }
@@ -26,34 +26,32 @@ createComment = (req, res) => {
             .save()
             .then(savedComment => {
                 // Find the section where the comment is and add it to the section's comment array
-                Section.findById({ _id: body.sectionId }, (err, section) => {
+                Section.findById({ _id: req.params.id }, (err, section) => {
                     if (err) {
                         return res.status(400).json({ success: false, error: err })
                     }
-                    else {
-                        section.comments.push(savedComment._id);
-                        section
-                            .save()
-                            .then(() => {
-                                console.log("SUCCESS!!!");
-                                return res.status(200).json({
-                                    success: true,
-                                    id: section._id,
-                                    message: 'Section\'s comments updated!',
-                                })
+                    section.comments.push(savedComment._id);
+                    section
+                        .save()
+                        .then(() => {
+                            console.log("SUCCESS!!!");
+                            return res.status(200).json({
+                                success: true,
+                                id: section._id,
+                                newComment: savedComment,
+                                message: 'Section\'s comments updated!',
                             })
-                    }
+                        })
+                        .catch(error => {
+                            console.log(error);
+                            return res.status(400).json({
+                                error,
+                                message: 'Section id is not valid!'
+                            })
+                        })
                 })
             })
-            .then(() => {
-                return res.status(201).json({
-                    success: true,
-                    comment: comment,
-                    message: 'Comment Created!'
-                })
-            })
-            .catch( console.log("ERROR: Comment Not Created!") )
-   });
+    });
 }
 
 replyComment = (req, res) => {
@@ -69,7 +67,11 @@ replyComment = (req, res) => {
         }
 
         // Find the comment by its id and update the reply
-        Comment.findById({ _id: body._id }, (err, comment) => {
+        Comment.findById({ _id: req.params.id }, (err, comment) => {
+            if (err) {
+                return res.status(400).json({ success: false, message: "Id not valid", error: err })
+            }
+
             comment.reply.username = body.username;
             comment.reply.message = body.message;
             comment.
@@ -78,17 +80,17 @@ replyComment = (req, res) => {
                     console.log("SUCCESS!!!");
                     return res.status(200).json({
                         success: true,
-                        id: body._id,
+                        id: req.params.id,
                         message: 'Reply updated!',
                     })
                 })
-                // .catch(error => {
-                //     console.log("FAILURE: " + JSON.stringify(error));
-                //     return res.status(404).json({
-                //         error,
-                //         message: 'Reply not updated!',
-                //     })
-                // })
+                .catch(error => {
+                    console.log("FAILURE: " + JSON.stringify(error));
+                    return res.status(404).json({
+                        error,
+                        message: 'Reply not updated!',
+                    })
+                })
         })
 
     });
