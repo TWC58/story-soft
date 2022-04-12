@@ -18,9 +18,7 @@ router.post("/followUser", (req, res) => {
 });
 
 //create post request
-router.post("/createPost", (req, res) => {
-    res.json("create post")
-});
+router.post("/createpost", );
 
 //update post request
 router.put("/updatePost", (req, res) => {
