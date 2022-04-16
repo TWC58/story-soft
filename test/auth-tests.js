@@ -1,13 +1,18 @@
 var assert = require('assert'); //mocha import
+const { get } = require('http');
+const { getUserInfo } = require('../controllers/user-controller');
 
 describe('User Tests', function() {
 
     describe('getUserInfo() tests', function() {
     
         describe('getUserInfo() with valid id', function () {
-            it('Should return user info', function () {
-                id = 1
-                assert.equal([1, 2, 3].indexOf(4), -1);
+            it('Should return correct user info', async function () {
+                id = '6246246820afb569083555af';
+                const res = await get('http://localhost:5000/auth/getUser/{id}');
+                console.log(res);
+                console.log('Expected: TWC58\nActual: '+res.body.username);
+                assert.equal(res.body.username, 'TWC58');
             });
         });
 
@@ -120,6 +125,57 @@ describe('User Tests', function() {
         });
 
         describe('followUser() already following', function () {
+            it('Should return 400 error', function () {
+                assert.equal([1, 2, 3].indexOf(4), -1);
+            });
+        });
+    });
+
+    describe('updateUser() and updateBookmarks() tests', function () {
+
+        describe('updateUser() with authorization', function () {
+            it('Should return 400 error', function () {
+                assert.equal([1, 2, 3].indexOf(4), -1);
+            });
+        });
+
+        describe('updateUser() without authorization', function () {
+            it('Should return 400 error', function () {
+                assert.equal([1, 2, 3].indexOf(4), -1);
+            });
+        });
+
+        describe('updateUser() without username', function (){
+            it('Should return 400 error', function () {
+                assert.equal([1, 2, 3].indexOf(4), -1);
+            });
+        });
+
+        describe('updateUser() with already existing username', function (){
+            it('Should return 400 error', function () {
+                assert.equal([1, 2, 3].indexOf(4), -1);
+            });
+        });
+
+        describe('updateBookmarks() valid with authorization', function (){
+            it('Should return 400 error', function () {
+                assert.equal([1, 2, 3].indexOf(4), -1);
+            });
+        });
+
+        describe('updateBookmarks() without authorization', function (){
+            it('Should return 400 error', function () {
+                assert.equal([1, 2, 3].indexOf(4), -1);
+            });
+        });
+
+        describe('updateBookmarks() invalid post id', function (){
+            it('Should return 400 error', function () {
+                assert.equal([1, 2, 3].indexOf(4), -1);
+            });
+        });
+
+        describe('updateBookmarks() invalid section id', function (){
             it('Should return 400 error', function () {
                 assert.equal([1, 2, 3].indexOf(4), -1);
             });

@@ -5,6 +5,7 @@ const ComicPost = require('../models/comic-post-model');
 const StoryPost = require('../models/story-post-model');
 
 const isLoggedIn = (req, res, next) => {
+    console.log("isLoggedIn:", req.user);
     req.user ? next() : res.redirect('/auth/google'); //ACTUAL
     //next(); //TESTING
 }
@@ -21,6 +22,23 @@ getUserInfo = async (req, res) => {
             dislikes: user.dislikes,
             bookmarks: user.bookmarks
         });
+    })
+    .catch(error => {
+        if(error){
+        console.log("FAILURE: " + error);
+        return res.status(500).json({
+            error,
+            message: 'User database query failed.',
+        })
+    }
+    }) 
+}
+
+getLoggedIn = async (req, res) => {
+    console.log("getting logged in");
+    User.findById(req.user.id).then((user) => {
+        console.log("User found and sending: ", user);
+        return res.status(200).json(user);
     })
     .catch(error => {
         if(error){
@@ -182,6 +200,7 @@ updateBookmarks = async (req, res) => {
 module.exports = {
     isLoggedIn,
     getUserInfo,
+    getLoggedIn,
     deleteUser,
     followUser,
     unfollowUser,

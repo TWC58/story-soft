@@ -20,8 +20,7 @@ passport.deserializeUser((id, done) => {
 passport.use(new GoogleStrategy({
     clientID: GOOGLE_CLIENT_ID,
     clientSecret: GOOGLE_CLIENT_SECRET,
-    callbackURL: GOOGLE_CALLBACK_URL,
-    proxy: true
+    callbackURL: GOOGLE_CALLBACK_URL
   },
   (request, accessToken, refreshToken, profile, done) => {
     console.log("ENTERING AUTHENTICATE CALLBACK");

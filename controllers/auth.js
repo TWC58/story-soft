@@ -18,25 +18,19 @@ router.get('/google',
 );
 
 //callback uri
-router.get('/google/callback', passport.authenticate('google', {
-  successRedirect: 'http://localhost:3000/login/success',
-  failureRedirect: 'http://localhost:3000/login/failure'
-}),  
-  (req, res) => {
-    console.log("User: ", req.user);
-    //res.status(200).json(req.user);
+router.get('/google/callback', passport.authenticate('google'), (req, res) => {
+  //res.redirect('http://localhost:3000');
 });
 
 router.get('/getLoggedIn', User.isLoggedIn, (req, res) => {
-  res.json(req.user).send();
+  res.json(req.user);
 }); //TODO needed?
 
 //logout
-router.post('/logout', (req, res) => {
-    console.log('Logging out...');
+router.get('/logout', (req, res) => {
     req.logout();
-    console.log(req.user);
-    res.status(200).send();
+    req.session = null;
+    res.redirect('../');
 });
 
 //get user profile info

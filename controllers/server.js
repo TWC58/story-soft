@@ -21,7 +21,7 @@ app.use(cookieSession({
 
 //authentication 
 app.use(cors({credentials: true, origin: 'http://localhost:3000'}));
-//app.use(cors({credentials: true, origin: 'http://https://accounts.google.com/o/oauth2/v2/auth'}));
+app.use(cors({credentials: true, origin: 'http://https://accounts.google.com/o/oauth2/v2/auth'}));
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -54,7 +54,7 @@ mongoose.connection.on('connected', () => {
 
 //home page
 app.get('/', (req, res) => {
-    res.redirect('http://localhost:3000');
+    res.json("HOME PAGE");
 });
 
 app.get('/cors', (req, res) => { //TODO change to client once local testing complete
