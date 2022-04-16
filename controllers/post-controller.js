@@ -166,7 +166,7 @@ getPost = async (req, res) => {
 
         if (!schemaType) {
             return res.status(404).json({ success: false, error: err })//case where we have an invalid post type url parameter
-        }
+        }//TODO remove reference error err
 
         const id = req.params.id;
 
@@ -391,10 +391,10 @@ this.getPostsByTitle = async (search, schemaType) => {
 
 //not exposed via router
 this.getPostsByTag = async (search, schemaType, postType) => {
-    const postIds = await schemaType.getPostIdsByTag(search, postType);
+    const postIds = await TagController.getPostIdsByTag(search, postType);
     const posts = [];
 
-    postIds.array.forEach(id => {
+    postIds.forEach(id => {
         const post = schemaType.findOne({_id: id});
         posts.push(post);
     });
