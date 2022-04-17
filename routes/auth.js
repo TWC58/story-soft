@@ -27,9 +27,7 @@ router.get('/google/callback', passport.authenticate('google', {
     //res.status(200).json(req.user);
 });
 
-router.get('/getLoggedIn', User.isLoggedIn, (req, res) => {
-  res.json(req.user).send();
-}); //TODO needed?
+router.get('/getLoggedIn', User.isLoggedIn, User.getLoggedIn); //TODO needed?
 
 //logout
 router.post('/logout', (req, res) => {

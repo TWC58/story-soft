@@ -165,16 +165,19 @@ unfollowUser = async (req, res) => {
 
 updateUser = async (req, res) => {
     userID = req.body.id;
-    if(1){//req.user.id == userID){ //ACTUAL
+    console.log("Updating: ", req.body);
+    if(req.user.id == userID){ //ACTUAL
         User.findByIdAndUpdate(userID, {
             username: req.body.username,
             profile_pic_url: req.body.profile_pic_url,
             bio: req.body.bio
-        }).catch(err => {
-            console.log(err);
-            return res.status(500);
+        }, { new: true }, function(err, user) {
+            if(err) {
+                console.log(err);
+                return res.status(500);
+            }
+            return res.status(200).json(user);
         });
-        return res.status(200).json("UPDATE PROFILE SUCCESSFUL");
     }
     else { return res.status(401).json("UNAUTHORIZED UPDATEUSER REQUEST"); }
 }
