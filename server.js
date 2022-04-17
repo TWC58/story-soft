@@ -13,6 +13,8 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const SESSION_SECRET = process.env.SESSION_SECRET || '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';
 
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
+
 //sessions
 app.use(cookieSession({
     secret: SESSION_SECRET,
@@ -20,7 +22,7 @@ app.use(cookieSession({
 })); 
 
 //authentication 
-app.use(cors({credentials: true, origin: 'http://localhost:3000'}));
+app.use(cors({credentials: true, origin: FRONTEND_URL}));
 //app.use(cors({credentials: true, origin: 'http://https://accounts.google.com/o/oauth2/v2/auth'}));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -54,11 +56,11 @@ mongoose.connection.on('connected', () => {
 
 //home page
 app.get('/', (req, res) => {
-    res.redirect('http://localhost:3000');
+    res.redirect(FRONTEND_URL);
 });
 
 app.get('/cors', (req, res) => { //TODO change to client once local testing complete
-    res.set('Access-Control-Allow-Origin', 'http://localhost:3000');
+    res.set('Access-Control-Allow-Origin', FRONTEND_URL);
     res.send({ "msg": "This has CORS enabled 🎈" })
 })
 

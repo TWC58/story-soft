@@ -3,6 +3,8 @@ const router = express.Router();
 const passport = require('passport');
 const User = require('../controllers/user-controller');
 
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
+
 //redirect uri after google failure (placeholder for now)
 router.get("/failed", (req, res) => {
     res.json("login failed") 
@@ -19,8 +21,8 @@ router.get('/google',
 
 //callback uri
 router.get('/google/callback', passport.authenticate('google', {
-  successRedirect: 'http://localhost:3000/login/success',
-  failureRedirect: 'http://localhost:3000/login/failure'
+  successRedirect: `${FRONTEND_URL}/login/success`,
+  failureRedirect: `${FRONTEND_URL}/login/failure`
 }),  
   (req, res) => {
     console.log("User: ", req.user);
