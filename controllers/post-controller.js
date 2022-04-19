@@ -35,11 +35,11 @@ function processPostType(postType) {
 }
 
 createPost = async (req, res) => {
-    // auth.isLoggedIn(req, res, async function () {
+    auth.isLoggedIn(req, res, async function () {
 
-        const user = await User.findOne({ _id: req.params.userId });
+        // const user = await User.findOne({ _id: req.params.userId });
         //TODO add user error handling
-        // const user = await User.findOne({ _id: req.user.userId });
+        const user = await User.findOne({ _id: req.user._id });
         let schemaType = processPostType(req.params.postType); 
 
         if (!schemaType) {
@@ -56,8 +56,8 @@ createPost = async (req, res) => {
             rootSection: rootSection._id,
             summary: "",
             userData: { 
-                // userId: req.user.userId,
-                userId: req.params.userId,
+                userId: req.user._id,
+                // userId: req.params.userId,
                 username: user.username
             },
             tags: [],
@@ -88,11 +88,11 @@ createPost = async (req, res) => {
                     message: 'Post Not Created!'
                 })
             })
-    // });
+    });
 }
 
 updatePost = async (req, res) => {
-    // auth.isLoggedIn(req, res, async function () {
+    auth.isLoggedIn(req, res, async function () {
 
         let schemaType = processPostType(req.params.postType); 
 
@@ -109,8 +109,8 @@ updatePost = async (req, res) => {
             })
         }
 
-        // schemaType.findOne({ _id: req.params.id, userId: req.user.userId }, (err, post) => {
-        schemaType.findOne({ _id: req.params.id, userId: req.params.userId }, (err, post) => {
+        schemaType.findOne({ _id: req.params.id, userId: req.user._id }, (err, post) => {
+        // schemaType.findOne({ _id: req.params.id, userId: req.params.userId }, (err, post) => {
             console.log("ID " + req.params.id + " post found: " + JSON.stringify(post));
             if (err || !post) {
                 return res.status(404).json({
@@ -156,10 +156,10 @@ updatePost = async (req, res) => {
                     })
                 })
         })
-    // });
+    });
 }
 
-getPost = async (req, res) => {
+getPost = async (req, res) => {//shouldn't need auth because of guest users
     // auth.isLoggedIn(req, res, async function () {
 
         let schemaType = processPostType(req.params.postType); 
@@ -192,7 +192,7 @@ getPost = async (req, res) => {
     // });
 }
 
-getPosts = async (req, res) => {
+getPosts = async (req, res) => {//shouldn't need auth, since guest users can get posts
     // auth.isLoggedIn(req, res, async function () {
 
         let schemaType = processPostType(req.params.postType); 
@@ -216,16 +216,16 @@ getPosts = async (req, res) => {
         let posts = null;
 
         switch (searchBy) {
-            case (SearchBy.AUTHOR):
+            case (SearchBy.AUTHOR)://EXACT SEARCH
                 posts = await this.getPostsByAuthor(search, schemaType);
                 break;
-            case (SearchBy.TITLE):
+            case (SearchBy.TITLE)://INEXACT SEARCH
                 posts = await this.getPostsByTitle(search, schemaType);
                 break;
-            case (SearchBy.TAG):
+            case (SearchBy.TAG)://EXACT SEARCH
                 posts = await this.getPostsByTag(search, schemaType, req.params.postType);
                 break;
-            case (SearchBy.NONE):
+            case (SearchBy.NONE)://NO SEARCH
                 posts = await this.getAllPosts("", schemaType);
                 break;
             default:
@@ -240,7 +240,7 @@ getPosts = async (req, res) => {
 }
 
 deletePost = async (req, res) => {
-    // auth.isLoggedIn(req, res, async function () {
+    auth.isLoggedIn(req, res, async function () {
 
         let schemaType = processPostType(req.params.postType); 
 
@@ -248,8 +248,8 @@ deletePost = async (req, res) => {
             return res.status(404).json({ success: false, message: "ERROR: invalid post type in URL!" })//case where we have an invalid post type url parameter
         }
 
-        // schemaType.findOne({ _id: req.params.id, userId: req.user.userId }, (err, post) => {
-        schemaType.findOne({ _id: req.params.id, userId: req.params.userId }, (err, post) => {
+        schemaType.findOne({ _id: req.params.id, userId: req.user._id }, (err, post) => {
+        // schemaType.findOne({ _id: req.params.id, userId: req.params.userId }, (err, post) => {
             if (err) {
                 return res.status(404).json({
                     err,
@@ -266,16 +266,16 @@ deletePost = async (req, res) => {
                 //case where the tags need to be processed to remove the post
                 TagController.processTags(post, [], req.params.postType);
             }
-            // schemaType.findOneAndDelete({ _id: req.params.id, userId: req.user.userId }, () => {
-            schemaType.findOneAndDelete({ _id: req.params.id, userId: req.params.userId }, () => {
+            schemaType.findOneAndDelete({ _id: req.params.id, userId: req.user._id }, () => {
+            // schemaType.findOneAndDelete({ _id: req.params.id, userId: req.params.userId }, () => {
                 return res.status(200).json({ success: true, data: post })
             })
         })
-    // });
+    });
 }
 
 likePost = async (req, res) => {
-    // auth.isLoggedIn(req, res, async function () {
+    auth.isLoggedIn(req, res, async function () {
 
         let schemaType = processPostType(req.params.postType); 
 
@@ -305,8 +305,8 @@ likePost = async (req, res) => {
             }
             //otherwise we have a valid like situation
             //need to find the user liking
-            // User.findOne({_id: req.user.userId}, (err, user) => {
-            User.findOne({_id: req.params.userId}, (err, user) => {
+            User.findOne({_id: req.user._id}, (err, user) => {
+            // User.findOne({_id: req.params.userId}, (err, user) => {
                 if (err || !user) {
                     return res.status(404).json({
                         err,
@@ -374,18 +374,18 @@ likePost = async (req, res) => {
                 }
             });
         })
-    // });
+    });
 }
 
 //not exposed via router
 this.getPostsByAuthor = async (search, schemaType) => {
-    const posts = await schemaType.find({'userData.username': { $regex: new RegExp("^" + search + "$", "i") }});
+    const posts = await schemaType.find({'userData.username': { $regex: new RegExp("^" + search + "$", "i") }, published: { $ne: null }});
     return posts;
 }
 
 //not exposed via router
 this.getPostsByTitle = async (search, schemaType) => {
-    const posts = await schemaType.find({name: { $regex: new RegExp("^" + search + "$", "i") }});
+    const posts = await schemaType.find({name: { $regex: new RegExp(search, "i") }, published: { $ne: null }});
     return posts;
 }
 
@@ -394,10 +394,10 @@ this.getPostsByTag = async (search, schemaType, postType) => {
     const postIds = await TagController.getPostIdsByTag(search, postType);
     const posts = [];
 
-    postIds.forEach(id => {
-        const post = schemaType.findOne({_id: id});
+    for (id of postIds) {
+        const post = await schemaType.findOne({_id: id, published: { $ne: null }});
         posts.push(post);
-    });
+    }
 
     return posts;
 }

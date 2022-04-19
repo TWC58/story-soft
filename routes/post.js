@@ -8,22 +8,26 @@ const SectionController = require('../controllers/section-controller')
 const router = express.Router();
 
 //create post request
-router.post("/:postType/createpost/:userId", PostController.createPost);//TODO revert to auth
+// router.post("/:postType/createpost/:userId", PostController.createPost);//TODO revert to auth
+router.post("/:postType/createpost", PostController.createPost);
 
 //update post request
-router.put("/:postType/updatePost/:id/:userId", PostController.updatePost);//TODO revert to auth
+// router.put("/:postType/updatePost/:id/:userId", PostController.updatePost);//TODO revert to auth
+router.put("/:postType/updatePost/:id", PostController.updatePost);
 
 //get post request
-router.get("/:postType/getPost/:id", PostController.getPost);//TODO revert to auth
+router.get("/:postType/getPost/:id", PostController.getPost);//no auth
 
 //get posts request
-router.post("/:postType/getPosts", PostController.getPosts);//TODO revert to auth
+router.post("/:postType/getPosts", PostController.getPosts);//no auth
 
 //delete post request
-router.delete("/:postType/deletePost/:id/:userId", PostController.deletePost);//TODO revert to auth
+// router.delete("/:postType/deletePost/:id/:userId", PostController.deletePost);//TODO revert to auth
+router.delete("/:postType/deletePost/:id", PostController.deletePost);
 
 //like post request
-router.post("/:postType/likePost/:id/:userId", PostController.likePost);//TODO revert to auth
+// router.post("/:postType/likePost/:id/:userId", PostController.likePost);//TODO revert to auth
+router.post("/:postType/likePost/:id", PostController.likePost);
 
 //gets all tags for story site
 router.get("/:postType/getTags", TagController.getTags)
