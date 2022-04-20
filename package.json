@@ -31,7 +31,7 @@
   },
   "scripts": {
     "start": "node server.js",
-    "build": "react-scripts build",
+    "build": "buildpack",
     "test": "mocha",
     "dev": "nodemon server.js"
   },
