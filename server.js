@@ -23,7 +23,7 @@ app.use(cookieSession({
 
 //authentication 
 app.use(cors({credentials: true, origin: FRONTEND_URL}));
-//app.use(cors({credentials: true, origin: 'http://https://accounts.google.com/o/oauth2/v2/auth'}));
+//app.use(cors({credentials: true, origin: 'https://accounts.google.com/o/oauth2/v2/auth'}));
 app.use(passport.initialize());
 app.use(passport.session());
 
