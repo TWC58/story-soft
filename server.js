@@ -14,6 +14,7 @@ const PORT = process.env.PORT || 5000;
 const SESSION_SECRET = process.env.SESSION_SECRET || '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';
 
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
+console.log(`FRONTEND_URL: ${FRONTEND_URL}`);
 
 //sessions
 app.use(cookieSession({
