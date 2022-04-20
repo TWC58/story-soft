@@ -34,7 +34,7 @@
   },
   "scripts": {
     "start": "node server.js",
-    "build": "heroku/nodejs",
+
     "test": "mocha",
     "dev": "nodemon server.js"
   },
