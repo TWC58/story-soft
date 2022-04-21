@@ -25,9 +25,9 @@ const PostType = {
 }
 
 function processPostType(postType) {
-    if (postType === PostType.STORY) {
+    if (postType.toLowerCase() === PostType.STORY) {
         return StoryPost;
-    } else if (postType === PostType.COMIC) {
+    } else if (postType.toLowerCase() === PostType.COMIC) {
         return ComicPost;
     } 
 
@@ -47,8 +47,6 @@ createPost = async (req, res) => {
         }
 
         const rootSection = await SectionController.createSection();
-
-        console.log("ROOT SECTION: " + rootSection);
 
         const post = new schemaType({
             published: null,
