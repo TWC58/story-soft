@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const passport = require('passport');
 const User = require('../controllers/user-controller');
+const cors = require('cors')
 
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
 
@@ -29,7 +30,7 @@ router.get('/google/callback', passport.authenticate('google', {
     //res.status(200).json(req.user);
 });
 
-router.get('/getLoggedIn', User.isLoggedIn, User.getLoggedIn); //TODO needed?
+router.get('/getLoggedIn', cors({origin: `${FRONTEND_URL}`, credentials: true}), User.isLoggedIn, User.getLoggedIn); //TODO needed?
 
 //logout
 router.post('/logout', (req, res) => {

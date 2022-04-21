@@ -35,7 +35,6 @@ app.use(express.json());
 app.use(morgan('tiny'));
 
 //import routers
-//app.use(cors());
 const post_router = require('./routes/post');
 const comic_router = require('./routes/comic');
 const auth_router = require('./routes/auth');
