@@ -46,7 +46,7 @@ addSection = (req, res) => {
                     parentSection
                         .save()
                         .then(() => {
-                            return res.status(200).json({ success: true, section: parentSection })
+                            return res.status(200).json({ success: true, section: savedSection })
                         })
 
                 })
@@ -92,7 +92,7 @@ deleteSection = async (req, res) => {
 
 // Get section by id
 getSection = async (req, res) => {
-    Section.findById({ _id: req.params.id }, (err, section) => {
+    Section.findOne({ _id: req.params.id }, (err, section) => {
         if (err) {
             return res.status(400).json({ success: false, error: err });
         }
