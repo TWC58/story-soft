@@ -61,15 +61,31 @@ deleteSection = async (req, res) => {
     //     return res.status(200).json({ success: true, post: storypost })
     // })
     Section.findById({ _id: req.params.id }, (err, section) => {
-        console.log(req.params);
         if (err) {
             return res.status(404).json({
                 err,
                 message: 'Section not found!',
             })
         }
-        Section.findOneAndDelete({ id: req.params.id }, () => {
-            return res.status(200).json({ success: true, data: section })
+        Section.findOneAndDelete({ _id: req.params.id }, (err, deletedSection) => {
+            if (deletedSection) {
+                Section.findById({ _id: deletedSection.parent }, (err, parentSection) => {
+                    if (err) {
+                        return res.status(400).json({ success: false, error: err })
+                    }
+                    let index = parentSection.children.indexOf(deletedSection._id);
+                    if (index > -1) {
+                        console.log(parentSection.children);
+                        parentSection.children.splice(index, 1);
+                        console.log(parentSection.children);
+                        parentSection
+                            .save()
+                            .then(() => {
+                                return res.status(200).json({ success: true, data: deletedSection, parentId: parentSection })
+                            })
+                    }
+                })
+            }
         })
     })
 }
