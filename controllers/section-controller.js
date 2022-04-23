@@ -102,9 +102,28 @@ getSection = async (req, res) => {
     }).catch(err => console.log(err))
 }
 
+updateSection = async (req, res) => {
+    auth.isLoggedIn(req, res, async function () {
+        Section.findById({ _id: req.params.id }, (err, section) => {
+            if (err) {
+                return res.status(400).json({ success: false, error: err });
+            }
+            const body = req.body;
+            section.name = body.sectionName;
+            console.log(section);
+            section
+                .save()
+                .then(() => {
+                    return res.status(200).json({ success: true, section: section })
+                })
+        })
+    });
+}
+
 module.exports = {
     createSection,
     addSection,
     deleteSection,
-    getSection
+    getSection,
+    updateSection
 }

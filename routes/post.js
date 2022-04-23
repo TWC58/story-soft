@@ -41,6 +41,9 @@ router.delete("/deleteSection/:id", SectionController.deleteSection);
 //get section request
 router.get("/getSection/:id", SectionController.getSection);
 
+//update section request
+router.put("/updateSection/:id", SectionController.updateSection)
+
 //create comment request
 router.post("/createComment/:id", CommentController.createComment);
 
