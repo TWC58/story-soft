@@ -11,6 +11,7 @@ const SearchBy = {
     AUTHOR: "AUTHOR",
     TITLE: "TITLE",
     TAG: "TAG",
+    ID: "ID",
     NONE: "NONE"
 }
 
@@ -223,6 +224,9 @@ getPosts = async (req, res) => {//shouldn't need auth, since guest users can get
             case (SearchBy.TAG)://EXACT SEARCH
                 posts = await this.getPostsByTag(search, schemaType, req.params.postType);
                 break;
+            case (SearchBy.ID):
+                posts = await this.getPostsById(search, schemaType);
+                break;
             case (SearchBy.NONE)://NO SEARCH
                 posts = await this.getAllPosts("", schemaType);
                 break;
@@ -397,6 +401,12 @@ this.getPostsByTag = async (search, schemaType, postType) => {
         posts.push(post);
     }
 
+    return posts;
+}
+
+this.getPostsById = async (search, schemaType) => {
+    const posts = await schemaType.find({ 'userData.userId': search }); //find all posts of desired type by this author
+    console.log("SENDING POSTS: ", posts);
     return posts;
 }
 
