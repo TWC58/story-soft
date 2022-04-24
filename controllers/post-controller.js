@@ -160,7 +160,7 @@ updatePost = async (req, res) => {
 
 getPost = async (req, res) => {//shouldn't need auth because of guest users
     // auth.isLoggedIn(req, res, async function () {
-
+        console.log(req.params.id);
         let schemaType = processPostType(req.params.postType); 
 
         if (!schemaType) {
