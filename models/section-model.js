@@ -7,7 +7,8 @@ const SectionSchema = new Schema(
         name: { type: String, required: false },
         parent: { type: ObjectId, required: false },
         children: { type: [ObjectId], required: false },
-        comments: { type: [ObjectId], required: false }
+        comments: { type: [ObjectId], required: false },
+        data: { type: JSON, required: true, default: ""}
     },
     { timestamps: true },
 )

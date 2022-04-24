@@ -110,6 +110,7 @@ updateSection = async (req, res) => {
             }
             const body = req.body;
             section.name = body.sectionName;
+            section.data = body.data;
             console.log(section);
             section
                 .save()
