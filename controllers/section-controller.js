@@ -109,7 +109,7 @@ updateSection = async (req, res) => {
                 return res.status(400).json({ success: false, error: err });
             }
             const body = req.body;
-            section.name = body.sectionName;
+            section.name = body.name;
             section.data = body.data;
             console.log(section);
             section
