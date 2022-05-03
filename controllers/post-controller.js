@@ -237,6 +237,7 @@ getPosts = async (req, res) => {//shouldn't need auth, since guest users can get
                 })
         }
 
+        console.log("SENDING POSTS " + JSON.stringify(posts) + " for request " + JSON.stringify(body));
         return res.status(200).json({ success: true, data: posts });
     // });
 }
@@ -324,10 +325,13 @@ likePost = async (req, res) => {
                     user.save();
                     //now we need to add a like to the post
                     post.likes += 1;
-                    post.save();
-                    return res.status(200).json({
-                        success: true
+                    post.save().then(savedPost => {
+                        return res.status(200).json({
+                            post: savedPost,
+                            success: true
+                        });
                     });
+                    
                 } else if (!user.likes.includes(post._id) && !user.dislikes.includes(post._id) && req.body.like === LikeType.DISLIKE) {
                     //case where the user has no dislike for this post and is disliking
                     //add to user's dislikes
@@ -335,9 +339,11 @@ likePost = async (req, res) => {
                     user.save();
                     //now we need to add a dislike to the post
                     post.dislikes += 1;
-                    post.save();
-                    return res.status(200).json({
-                        success: true
+                    post.save().then(savedPost => {
+                        return res.status(200).json({
+                            post: savedPost,
+                            success: true
+                        });
                     });
                 } else if (user.likes.includes(post._id) && !user.dislikes.includes(post._id) && req.body.like === LikeType.DISLIKE) {
                     //case where the user is disliking a post they have liked
@@ -349,9 +355,11 @@ likePost = async (req, res) => {
                     
                     post.likes -= 1;
                     post.dislikes += 1;
-                    post.save();
-                    return res.status(200).json({
-                        success: true
+                    post.save().then(savedPost => {
+                        return res.status(200).json({
+                            post: savedPost,
+                            success: true
+                        });
                     });
                 } else if (!user.likes.includes(post._id) && user.dislikes.includes(post._id) && req.body.like === LikeType.LIKE) {
                     //case where the user is liking a post they have disliked
@@ -363,12 +371,38 @@ likePost = async (req, res) => {
                     
                     post.dislikes -= 1;
                     post.likes += 1;
-                    post.save();
-                    return res.status(200).json({
-                        success: true
+                    post.save().then(savedPost => {
+                        return res.status(200).json({
+                            post: savedPost,
+                            success: true
+                        });
+                    });
+                } else if (user.likes.includes(post._id)) {
+                    //case where user is liking post they already like
+                    user.likes.splice(user.likes.indexOf(post._id), 1);
+                    user.save();
+
+                    post.likes -= 1;
+                    post.save().then(savedPost => {
+                        return res.status(200).json({
+                            post: savedPost,
+                            success: true
+                        });
+                    });
+                } else if (user.dislikes.includes(post._id)) {
+                    //case where user is disliking post they already dislike
+                    user.dislikes.splice(user.dislikes.indexOf(post._id), 1);
+                    user.save();
+
+                    post.dislikes -= 1;
+                    post.save().then(savedPost => {
+                        return res.status(200).json({
+                            post: savedPost,
+                            success: true
+                        });
                     });
                 } else {
-                    //case where the user is liking a post already liked or disliking a post already disliked
+                    //other cases
                     return res.status(400).json({
                         success: false,
                         message: 'Liking or disliking an already liked/disliked post improperly. ACTION FAILED.'

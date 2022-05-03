@@ -7,9 +7,9 @@ const PostType = {
 }
 
 function processTagType(tagType) {
-    if (tagType === PostType.STORY) {
+    if (tagType.toLowerCase() === PostType.STORY) {
         return StoryTag;
-    } else if (tagType === PostType.COMIC) {
+    } else if (tagType.toLowerCase() === PostType.COMIC) {
         return ComicTag;
     } 
 
@@ -21,7 +21,7 @@ function processTagType(tagType) {
 //from tags that are now removed and adding to tags that are new)
 processTags = (post, newTags, postType) => {
 
-    let schemaType = (postType === PostType.STORY) ? StoryTag : ComicTag;
+    let schemaType = (postType.toLowerCase() === PostType.STORY) ? StoryTag : ComicTag;
 
     //first figure out which tags are new and add this post to the tag
     let tagsDifference = newTags.filter(tag => !post.tags.includes(tag));//this holds all tags in newTags that were not already present in post.tags
@@ -68,7 +68,7 @@ processTags = (post, newTags, postType) => {
 
 //not exposed by router
 getPostIdsByTag = async (tag, postType) => {
-    let schemaType = (postType === PostType.STORY) ? StoryTag : ComicTag;
+    let schemaType = (postType.toLowerCase() === PostType.STORY) ? StoryTag : ComicTag;
     const tagFound = await schemaType.findOne({name: tag});
     return (tagFound) ? tagFound.posts : [];
 }
