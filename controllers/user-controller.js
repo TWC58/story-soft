@@ -14,6 +14,7 @@ getUserInfo = async (req, res) => {
     User.findById(req.params.id).then((user) => {
         return res.status(200).json({ 
             username: user.username,
+            _id: req.params.id,
             profile_pic_url: user.profile_pic_url,
             bio: user.bio,
             followers: user.followers,
@@ -117,7 +118,7 @@ followUser = async (req, res) => {
     followerID = req.body.follower;
     followedID = req.body.followed;
     console.log("FOLLOWER:\t"+followerID+"\nFOLLOWED:\t"+followedID);
-    if(1){//req.user.id == followerID){ //authorize
+    if(req.user.id == followerID){ //authorize
         
         //update follower's following list
         User.findByIdAndUpdate(followerID, { $push: {following : followedID }})
