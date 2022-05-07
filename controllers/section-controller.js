@@ -97,7 +97,8 @@ getSection = async (req, res) => {
             return res.status(400).json({ success: false, error: err });
         }
         console.log(section);
-        section._id = req.params.id;
+        if (section)
+            section._id = req.params.id;
         return res.status(200).json({ success: true, section: section })
     }).catch(err => console.log(err))
 }
