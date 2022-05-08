@@ -50,6 +50,9 @@ router.post("/createComment/:id", CommentController.createComment);
 //adds a comment reply
 router.post("/replyComment/:id", CommentController.replyComment);
 
+//get comment request
+router.get("/getComment/:id", CommentController.getComment);
+
 
 //report post request
 router.put("/reportPost", (req, res) => {
