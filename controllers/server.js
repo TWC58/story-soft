@@ -22,7 +22,7 @@ app.use(cookieSession({
 //authentication 
 app.use(cors({credentials: true, origin: 'http://localhost:3000'}));
 app.use(cors({credentials: true, origin: 'http://https://accounts.google.com/o/oauth2/v2/auth'}));
-app.use(cors({credentials: true, origin: 'https://story-soft-client.herokuapp.com'}));
+app.use(cors({origin: 'https://story-soft-client.herokuapp.com'}));
 app.use(passport.initialize());
 app.use(passport.session());
 
