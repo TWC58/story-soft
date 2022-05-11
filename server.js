@@ -38,7 +38,7 @@ app.use(morgan('tiny'));
 const post_router = require('./routes/post');
 const comic_router = require('./routes/comic');
 const auth_router = require('./routes/auth');
-
+/*
 // Add headers before the routes are defined
 app.use(function (req, res, next) {
 
@@ -58,7 +58,7 @@ app.use(function (req, res, next) {
     // Pass to next layer of middleware
     next();
 });
-
+*/
 //connect routers
 app.use("/post", post_router);
 app.use("/comic", comic_router);
