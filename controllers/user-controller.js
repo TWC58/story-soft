@@ -4,6 +4,8 @@ const User = require('../models/user-model');
 const ComicPost = require('../models/comic-post-model');
 const StoryPost = require('../models/story-post-model');
 
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
+
 const isLoggedIn = (req, res, next) => {
     console.log("isLoggedIn:", req.user);
     req.user ? next() : res.redirect('/auth/google'); //ACTUAL
@@ -39,6 +41,7 @@ getLoggedIn = async (req, res) => {
     console.log("getting logged in");
     User.findById(req.user.id).then((user) => {
         console.log("User found and sending: ", user);
+        res.setHeader('Access-Control-Allow-Origin', FRONTEND_URL);
         return res.status(200).json(user);
     })
     .catch(error => {

@@ -30,8 +30,8 @@ router.get('/google/callback', passport.authenticate('google', {
     //res.status(200).json(req.user);
 });
 
-router.get('/getLoggedIn', User.isLoggedIn, User.getLoggedIn); //TODO needed?
-//cors({origin: `${FRONTEND_URL}`, credentials: true}),
+router.get('/getLoggedIn', cors({origin: `${FRONTEND_URL}`, credentials: true}), User.isLoggedIn, User.getLoggedIn); //TODO needed?
+
 //logout
 router.post('/logout', (req, res) => {
     console.log('Logging out...');
