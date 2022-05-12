@@ -39,7 +39,7 @@ passport.use(new GoogleStrategy({
             googleId: profile.id,
             username: "User"+profile.id,
             email: profile.emails[0].value,
-            profile_pic_url: "",
+            profile_pic_url: profile.photos[0].value,
             bio: "",
             likes: [],
             dislikes: [],
