@@ -43,9 +43,9 @@ router.post('/logout', (req, res) => {
 //get user profile info
 router.get('/getUser/:id', User.getUserInfo);
 
-router.delete('/deleteUser/:id', User.isLoggedIn, User.deleteUser);
+router.delete('/deleteUser', User.isLoggedIn, User.deleteUser);
 
-router.get('/deleteUser/:id', User.isLoggedIn, User.deleteUser);
+router.get('/deleteUser', User.isLoggedIn, User.deleteUser);
 
 router.post('/followUser', User.isLoggedIn, User.followUser);
 
